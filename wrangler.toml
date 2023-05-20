@@ -5,6 +5,9 @@ main = "src/worker.js"
 compatibility_date = "2023-05-20"
 
 
+[vars]
+LANG = "en"
+
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"
