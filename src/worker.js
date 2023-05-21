@@ -10,7 +10,8 @@ async function handleRequest(request) {
     const lang = await kv_bot_prefs.get("LANG")
 
     if (lang === null) {
-        return new Response("Value not found", { status: 404 });
+        await kv_bot_prefs.put("LANG", "ua")
+        // return new Response("Value not found", { status: 404 });
     }
 
     return new Response(lang)
