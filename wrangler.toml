@@ -4,9 +4,11 @@ workers_dev = true
 main = "src/worker.js"
 compatibility_date = "2023-05-20"
 
-# KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
+# # KV Namespace binding - For more information: 
+# https://developers.cloudflare.com/workers/runtime-apis/kv
+# https://developers.cloudflare.com/workers/wrangler/workers-kv/
 kv_namespaces = [
-    { binding = "kv_bot_prefs", id = "19b1e113c42c4939b56bc12fbb3b62f4" }
+    { binding = "kv_bot_prefs", id = "19b1e113c42c4939b56bc12fbb3b62f4", preview_id = "11017dfd88714012b466254a0b8f14d1" }
 ]
 
 # # Durable Object binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/durable-objects
