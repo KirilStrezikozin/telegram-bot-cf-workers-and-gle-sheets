@@ -10,6 +10,7 @@
 
 export default {
 	async fetch(request, env, ctx) {
-		return new Response('Hello World!' + env.LANG);
+        let lang = await env.kv_bot_prefs.get("LANG")
+		return new Response('Hello World!' + lang);
 	},
 };
