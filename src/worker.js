@@ -1,5 +1,7 @@
 /**
- * All guides and information is outlined in README.md in the root.
+ * Visit README.md in the project root for usage guide.
+ * 
+ * Detailed information can be found at https://developers.cloudflare.com/workers/
  */
 
 addEventListener('fetch', event => {
