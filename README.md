@@ -8,7 +8,8 @@
 - [Get Started with Workers](#get-started-with-workers)
 - [Installation](#installation)
 - [Deploy](#deploy)
-- [Secrets and Vars](#secrets-and-vars)
+- [KVs, Secrets and Vars](#variables)
+- [Webhook](#webhook)
 
 # Get Started with Workers
 
@@ -34,24 +35,28 @@ To preview worker locally, run:
     $ npx wrangler dev --remote
     # open a link in your browser
     
-To publish local changes to Cloudflare, run:
+To publish local changes to Cloudflare:
 
-    # make sure you're logged in
-    $ npx wrangler login
+1. Make sure you're logged in:
+
+        $ npx wrangler login
     
-    # you can view account details
-    $ npx wrangler whoami
-    # account_id has to be added to wrangler.toml
+2. Add your Cloudflare `account_id` to `wrangler.toml`:
+
+        # you can view account details
+        $ npx wrangler whoami
     
-    $ npx wrangler deploy
+3. Deploy your Worker:
+
+        $ npx wrangler deploy
     
-# Secrets and Vars
+# Variables
 
 - Secrets and environment variables can be added via the Cloudflare Worker Dashboard. You can also add them via your terminal:
 
       $ npx wrangler secret put <KEY>
       
-- Add Environmental Variables to `wrangler.toml`:
+- Add Environmental Variables to `wrangler.toml` (more info [here](https://developers.cloudflare.com/workers/platform/environment-variables/):
 
      ```toml
      # wrangler.toml
@@ -60,8 +65,64 @@ To publish local changes to Cloudflare, run:
      LANG = "en"
      ```
 
-For Module Workers, Secret Keys and Vars are accessed like so:
+- Access Secret Keys and Vars:
 
 ```javascript
+// ES Worker
 env.SOME_API_KEY
 ```
+```javascript
+// Service Worker
+SOME_API_KEY
+```
+
+- Add and use KVs. More info [here](https://developers.cloudflare.com/workers/runtime-apis/kv/):
+           
+        # add KV namespace
+        $ npx wrangler kv:namespace create <NAMESPACE_BINDING>
+        
+        # put a key-value pair into the namespace
+        $ npx wrangler kv:key put --binding=<NAMESPACE_BINDING> "<KEY>" "<VALUE>"
+        
+```javascript
+// Service Worker
+
+const lang = await kv_bot_prefs.get("LANG");
+
+if (lang === null) {
+    await kv_bot_prefs.put("LANG", "en");
+}
+
+```
+
+# Webhook
+
+Bot can receive updates via an outgoing webhook. More info on webhooks [here](https://core.telegram.org/bots/api#setwebhook). `src/worker.js` comes with a several functions to set up a webhook. In order for them to work, ensure `BOT_API_TOKEN` and `BOT_API_SECRET` were added as worker secrets.
+
+1. Set a Webhook
+
+        # You can open a link in your browser to set up a webhook directly:
+        https://api.telegram.org/bot<YOUR_BOT_API>/setWebhook?url=<YOUR_WEBHOOK_URL>&secret_token=<YOUR_WEBHOOK_SECRET_TOKEN>
+        
+   
+   It is recommended to manage Webhooks locally, but this worker also provides the ability to set it from your worker url. For additional security (so that no one else just opens the link and resets the webhook), provide your `BOT_API_TOKEN` as `bot` parameter: 
+        
+        # In your browser:
+        <YOUR_WORKER_URL>/setWebhook?bot=<BOT_API_TOKEN>
+        
+        # Response:
+        {"ok":true,"result":true,"description":"Webhook was set"}
+        
+2. Similarly to **1**, use these urls to Delete webhook or get info about it. The returned response is stringified json out of the fetched url request to telegram api.
+
+        # In your browser:
+        <YOUR_WORKER_URL>/deleteWebhook?bot=<BOT_API_TOKEN>
+        
+        # Response:
+        {"ok":true,"result":true,"description":"Webhook was deleted"}
+        
+        # In your browser:
+        <YOUR_WORKER_URL>/getWebhookInfo?bot=<BOT_API_TOKEN>
+        
+        # Response:
+        {"ok":true,"result":{"url":"<YOUR_WEBHOOK_URL>","has_custom_certificate":false,"pending_update_count":0}}
