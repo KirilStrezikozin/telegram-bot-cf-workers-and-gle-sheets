@@ -14,6 +14,8 @@
 # Get Started with Workers
 
 ## Create a Worker
+
+You can check out this [small workers beginner course](https://egghead.io/lessons/cloudflare-create-a-cloudflare-workers-account).
     
     # supposing you've got a repo created
     $ git clone https://github.com/USERNAME/REPO_NAME && cd REPO_NAME
@@ -56,7 +58,7 @@ To publish local changes to Cloudflare:
 
       $ npx wrangler secret put <KEY>
       
-- Add Environmental Variables to `wrangler.toml` (more info [here](https://developers.cloudflare.com/workers/platform/environment-variables/):
+- Add Environmental Variables to `wrangler.toml`. More info [here](https://developers.cloudflare.com/workers/platform/environment-variables/):
 
      ```toml
      # wrangler.toml
@@ -65,7 +67,7 @@ To publish local changes to Cloudflare:
      LANG = "en"
      ```
 
-- Access Secret Keys and Vars:
+- Access Secret Keys and Vars. Nice tutorial [here](https://egghead.io/lessons/cloudflare-use-workers-secrets-to-securely-store-api-credentials):
 
 ```javascript
 // ES Worker
