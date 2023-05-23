@@ -20,3 +20,13 @@ export async function getLang(userId) {
 
     return lang;
 }
+
+
+/*
+ * Set user's preferred language
+ */
+export async function setLang(userId, value) {
+    // Get user's preferred language
+    // If not found, put a new LANG entry for the user
+    await kv_bot_prefs.put(`LANG_${userId}`, value);
+}

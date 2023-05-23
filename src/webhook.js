@@ -4,7 +4,7 @@
  * Detailed information can be found at https://developers.cloudflare.com/workers/
  */
 
-import { callApi } from './bot.js'
+import { callApi } from './api.js'
 
 
 export function set(urlData) {
