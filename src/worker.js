@@ -8,7 +8,7 @@ import * as webhook from './webhook.js'
 import * as bot from './bot.js'
 
 
-/*
+/**
  * Wait for requests to the Worker.
  */
 addEventListener('fetch', event => {
@@ -16,7 +16,7 @@ addEventListener('fetch', event => {
 });
 
 
-/*
+/**
  * Handle events sent to the Worker.
  */
 async function handleEvent(event) {
@@ -31,15 +31,3 @@ async function handleEvent(event) {
 
     else { return new Response("Invalid URL pathname."); }
 }
-
-
-// async function get_preferred_lang() {
-//     const lang = await kv_bot_prefs.get("LANG");
-// 
-//     if (lang === null) {
-//         await kv_bot_prefs.put("LANG", "ua");
-//         // return new Response("Value not found", { status: 404 });
-//     }
-//     
-//     return lang;
-// }
