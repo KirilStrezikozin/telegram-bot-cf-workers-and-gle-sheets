@@ -8,8 +8,13 @@
 /**
  * Send a new message
  */
-export function sendMessage(chatId, text) {
-    return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
+export function sendMessage(chatId, text, buttons = null) {
+    if (buttons) {
+        return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
+            reply_markup: JSNO.stringify({ inline_keyboard: buttons }) });
+    } else {
+        return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
+    }
 }
 
 

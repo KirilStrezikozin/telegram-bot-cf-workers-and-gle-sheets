@@ -60,7 +60,10 @@ async function handleMessage(message, lang) {
 
     } else if (message.text.startsWith('/language')) {
         const lang_msg = botReply.get("language", lang, message.from.id);
-        return api.sendMessage(message.chat.id, lang_msg);
+
+        return api.sendMessage(message.chat.id, lang_msg, buttons = [
+            { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
+            { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
     }
 }
 
