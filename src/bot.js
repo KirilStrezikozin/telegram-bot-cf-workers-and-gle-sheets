@@ -22,21 +22,19 @@ export class Bot {
         const content = await request.json();
 
         try {
-            await this.sendMessage(content.message.chat.id, "Hello");
+            // Handle incoming message from the user
+            if ('message' in content) {
+                //await this.getUserLang(request.content.message.from.id);
+                await this.handleMessage(content.message);
+            }
 
-            // // Handle incoming message from the user
-            // if ('message' in request.content) {
-            //     //await this.getUserLang(request.content.message.from.id);
-            //     await this.handleMessage(request.content.message);
-            // }
+            // Handle inline callback_query from the user
+            else if ('callback_query' in content) {
+                //await this.getUserLang(request.content.callback_query.from.id);
+                await this.handleCallbackQuery(content.callback_query);
+            }
 
-            // // Handle inline callback_query from the user
-            // else if ('callback_query' in request.content) {
-            //     //await this.getUserLang(request.content.callback_query.from.id);
-            //     await this.handleCallbackQuery(request.content.callback_query);
-            // }
-
-            // else console.log(request.content);
+            else console.log("Unhandled request content:\n" + content);
         }
         catch (error) {
             console.log(error);
@@ -48,26 +46,23 @@ export class Bot {
 
     async handleMessage(message) {
         // Reply to text message
-        await this.sendMessage(message.chat.id, message.toString());
-        return;
-
         if (message.hasOwnProperty('text')) {
-            if (message.text.startsWith('/start')) {
+            if (message.text.includes('/start')) {
                 const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
                 const help_msg = getReply("help", this.user_lang);
 
                 await this.sendMessage(message.chat.id, welcome_msg)
                 await this.sendMessage(message.chat.id, help_msg)
 
-            } else if (message.text.startsWith('/help')) {
+            } else if (message.text.includes('/help')) {
                 const help_msg = getReply("help", this.user_lang);
 
                 await this.sendMessage(message.chat.id, help_msg);
 
-            } else if (message.text.startsWith('/language')) {
+            } else if (message.text.includes('/language')) {
                 const lang_msg = getReply("language", this.user_lang);
 
-                await this.sendMessage(message.chat.id, lang_msg, buttons = [
+                await this.sendMessage(message.chat.id, lang_msg, [
                     { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
                     { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
 
@@ -121,10 +116,10 @@ export class Bot {
 
     async sendMessage(chatId, text, buttons = null) {
         if (buttons) {
-            return this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
+            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
                 reply_markup: JSON.stringify({ inline_keyboard: buttons }) });
         } else {
-            return this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
+            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
         }
     }
 
