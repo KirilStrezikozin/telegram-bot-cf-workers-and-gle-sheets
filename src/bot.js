@@ -15,13 +15,14 @@ export class Bot {
         this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
         this.webhook = new Webhook(worker_url, bot_api_token, bot_api_secret);
         this.user_lang = "ua";
-        this.is_active = true;
+        this.is_alive = true;
     }
 
     async update(request) {
-        const u = await request.json();
+        const content = await request.json();
+
         try {
-            await this.sendMessage(u.message.chat.id, "Hello");
+            await this.sendMessage(content.message.chat.id, "Hello");
 
             // // Handle incoming message from the user
             // if ('message' in request.content) {
@@ -42,7 +43,7 @@ export class Bot {
             return this.error(error, 400);
         }
 
-        return new Response('Ok.', { status: 200 });
+        return new Response("Ok.", { status: 200 });
     }
 
     async handleMessage(message) {

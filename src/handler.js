@@ -20,11 +20,11 @@ export class Handler {
         }
 
         const url = new URL(request.url);
-        this.processRequest(request);
+        await this.processRequest(request);
 
         this.bot = new Bot(url, this.bot_api_token, this.bot_api_secret);
         
-        if (!this.bot.is_active) {
+        if (!this.bot.is_alive) {
             this.response = this.error("Telegram bot not found", 404);
         }
 
@@ -38,15 +38,12 @@ export class Handler {
         }
 
         // Handle bot update
-        // else if (this.request.method === 'POST' && this.request.secret === this.bot_api_secret) {
-        else if (this.request.method === 'POST') {
-            this.response = await this.bot.update(this.request);
-            //if (this.request.size > 6 && this.request.content.message && this.request.content_type.includes('application/json')) {
-            // if (this.request.size > 6 && this.request.content_type.includes('application/json')) {
-            //     this.response = await this.bot.update(this.request);
-            // } else {
-            //     this.response = this.error("Invalid request content type or body", 403);
-            // }
+        else if (this.request.method === 'POST' && this.request.secret === this.bot_api_secret) {
+            if (this.request.size > 6 && this.request.content_type.includes('application/json')) {
+                this.response = await this.bot.update(this.request);
+            } else {
+                this.response = this.error("Invalid request content-type or body", 400);
+            }
         }
 
         else this.response = this.error("Bad or invalid request.", 400);
@@ -54,27 +51,12 @@ export class Handler {
         return this.response;
     }
 
-    async processRequest(req) {
-        let request = req;
-        request.size = parseInt(request.headers.get('content-length')) || 0;
-        request.content_type = parseInt(request.headers.get('content-type')) || '';
-        request.secret = request.headers.get('X-Telegram-Bot-Api-Secret-Token') || '';
-
+    async processRequest(request) {
         this.request = request;
 
-        // await this.getRequestContent();
-        // if (this.request.size && this.request.content-type) {
-        //     await this.getRequestContent();
-        // } else {
-        //     this.request.content = { message: '' };
-        // }
-
-    }
-
-    async getRequestContent() {
-        if (this.request.content_type.includes('application/json')) await this.request.json();
-        else if (this.request.content_type.includes('text/')) await this.request.text();
-        else return { message: '' };
+        this.request.size = parseInt(this.request.headers.get('content-length')) || 0;
+        this.request.content_type = this.request.headers.get('content-type') || '';
+        this.request.secret = this.request.headers.get('X-Telegram-Bot-Api-Secret-Token') || '';
     }
 
     error(message, status) {
