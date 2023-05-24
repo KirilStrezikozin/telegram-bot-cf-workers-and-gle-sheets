@@ -8,17 +8,18 @@
 /**
  * Get bot reply message innerText
  */
-export function get(msgType, lang, userId = null) {
+export function getReply(msgType, lang, first_name = "") {
+    //return "hooray";
     const botReplies = new Map([
         ["welcome", new Map([
             ["ua", 
-                `🥳 📚 *Вітаю, ${userId}!*\n\n` +
+                `🥳 📚 *Вітаю, ${first_name}!*\n\n` +
                 "Твоя відданість та працьовитість принесуть плоди. Прийми найщиріші побажання успіху та досягнень!\n\n" +
                 "🇺🇦 Ти - майбутнє нашої країни. Розкрий свій потенціал, набувай знання та відкривай нові горизонти!\n\n" +
                 "__Ми віримо в тебе! Завтрашній день належить тобі. Успіхів у підготовці до іспитів!__ 😇\n"
             ],
             ["en",
-                `🥳 📚 *Welcome, ${userId}!*\n\n` +
+                `🥳 📚 *Welcome, ${first_name}!*\n\n` +
                 "Your dedication and hard work will pay off. Accept the most sincere wishes for success and achievements!\n\n" +
                 "🇺🇦 You're the future. Unleash your potential, gain knowledge and open new horizons!\n\n" +
                 "__You're our hope! Tomorrow is yours. Good luck with the exams! 😇\n"
@@ -97,3 +98,5 @@ export function get(msgType, lang, userId = null) {
 
     return botReplies.get(msgType).get(lang);
 }
+
+// console.log(getReply("welcome", "ua"));

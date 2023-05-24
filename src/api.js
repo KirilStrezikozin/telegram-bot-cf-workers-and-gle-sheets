@@ -8,12 +8,12 @@
 /**
  * Send a new message
  */
-export function sendMessage(chatId, text, buttons = null) {
+export function sendMessage(chatId, msgText, buttons = null) {
     if (buttons) {
-        return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
-            reply_markup: JSNO.stringify({ inline_keyboard: buttons }) });
+        return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: msgText, parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({ inline_keyboard: buttons }) });
     } else {
-        return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
+        return callApi(BOT_API_TOKEN, 'sendMessage', { chat_id: chatId, text: msgText, parse_mode: 'Markdown' });
     }
 }
 
@@ -21,8 +21,8 @@ export function sendMessage(chatId, text, buttons = null) {
 /**
  * Answer a callback query
  */
-export function answerCallbackQuery(callbackQueryId, text) {
-    return callApi(BOT_API_TOKEN, 'answerCallbackQuery', { callback_query_id: callbackQueryId, text: text });
+export function answerCallbackQuery(callbackQueryId, msgText) {
+    return callApi(BOT_API_TOKEN, 'answerCallbackQuery', { callback_query_id: callbackQueryId, text: msgText });
 }
 
 
@@ -36,7 +36,15 @@ export async function callApi(bot_api_token, methodName, params = null) {
     }
 
     const apiUrl = `https://api.telegram.org/bot${bot_api_token}/${methodName}${query}`;
-    const r = await (await fetch(apiUrl)).json();
 
-    return new Response(JSON.stringify(r));
+    try {
+        const data = await fetch(apiUrl);
+        const result = await data.json();
+
+        // return new Response(JSON.stringify(r));
+        return new Response('ok' in result && result.ok ? 'Ok' : JSON.stringify(result, null, 2));
+
+    } catch (error) {
+        return new Response("Error while calling bot API", { status: 403 });
+    }
 }
