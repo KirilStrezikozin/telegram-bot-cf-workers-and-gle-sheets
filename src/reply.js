@@ -57,7 +57,7 @@ export function getReply(msgType, lang, first_name = "") {
         ])],
 
         ["invalid", new Map([
-            ["ua", new Array([
+            ["ua", new Array(
                 "😕 Не знаю, як на це відповідати\n",
                 "😕 Спробуй ще раз\n",
                 "😕 Упс, що ти мав(ла) на увазі?\n",
@@ -71,10 +71,9 @@ export function getReply(msgType, lang, first_name = "") {
                 "😕 Га? Не розумію.\n",
                 "😕 Ех, ніяк не можу тебе зрозуміти\n",
                 "😕 Ой, мої розробники такого не очікували\n",
-                "😕 Можливо, спитай щось інше\n"
-                ])
+                "😕 Можливо, спитай щось інше\n")
             ],
-            ["en\n", new Array([
+            ["en\n", new Array(
                 "😕 Don't know how to reply to this\n",
                 "😕 Try again\n",
                 "😕 Oops, what did you say?\n",
@@ -88,8 +87,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "😕 Sorry?\n",
                 "😕 Can't get where you're coming from with that\n",
                 "😕 Oh, my developers haven't covered this yet\n",
-                "😕 Maybe say something else?\n"
-                ])
+                "😕 Maybe say something else?\n")
             ],
         ])],
     ]);
