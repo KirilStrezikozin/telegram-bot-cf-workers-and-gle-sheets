@@ -47,6 +47,9 @@ export class Bot {
     async handleMessage(message) {
         // Reply to text message
         if (message.hasOwnProperty('text')) {
+            // text lowered and with no spaces
+            const text_lns = message.text.toLowerCase().replace(/\s+/g, "");
+
             if (message.text.includes('/start')) {
                 const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
                 const help_msg = getReply("help", this.user_lang);
@@ -66,13 +69,31 @@ export class Bot {
                     { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
                     { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
 
+            } else if (text_lns.includes("привіт") || text_lns.includes("hi") || text_lns.includes("hey") || text_lns.includes("hello")) {
+                await this.sendMessage(message.chat.id, "👋");
+                await this.replyRandom(message.chat.id, "hi");
+
+            } else if (text_lns.includes("дякую") || text_lns.includes("thank")) {
+                await this.sendMessage(message.chat.id, "🙏");
+                await this.replyRandom(message.chat.id, "thanks");
+
+            } else if (text_lns.includes("bye") || text_lns.includes("допобачення") || text_lns.includes("дозустрічі") || text_lns.includes("бувай") || text_lns.includes("прощавай")) {
+                await this.sendMessage(message.chat.id, "🥺");
+
+                const stop_reply = getReply("stop", this.user_lang);
+                const bye_replies = stop_reply[1];
+                const index = Math.floor(Math.random() * bye_replies.length);
+
+                await this.sendMessage(message.chat.id, bye_replies[index]);
+
+
             } else {
-                await this.replyInvalid(message.chat.id);
+                await this.replyRandom(message.chat.id, "invalid");
             }
         
         // Reply to other types of messages
         } else {
-            await this.replyInvalid(message.chat.id);
+            await this.replyRandom(message.chat.id, "invalid");
         }
     }
 
@@ -91,15 +112,15 @@ export class Bot {
             await this.sendMessage(message.chat.id, getReply("language_set", this.user_lang));
             await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
         } else {
-            await this.replyInvalid(callback_query.message.chat.id);
+            await this.replyRandom(callback_query.message.chat.id, "invalid");
         }
     }
 
-    async replyInvalid(chatId) {
-        const invalid_msgs = getReply("invalid", this.user_lang);
-        const invalid_index = Math.floor(Math.random() * invalid_msgs.length);
+    async replyRandom(chatId, replyType) {
+        const replies = getReply(replyType, this.user_lang);
+        const index = Math.floor(Math.random() * replies.length);
 
-        await this.sendMessage(chatId, invalid_msgs[invalid_index]);
+        await this.sendMessage(chatId, replies[index]);
     }
 
     async getUserLang(userId) {
