@@ -51,8 +51,8 @@ export class Bot {
                 const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
                 const help_msg = getReply("help", this.user_lang);
 
-                await this.sendMessage(message.chat.id, welcome_msg)
-                await this.sendMessage(message.chat.id, help_msg)
+                await this.sendMessage(message.chat.id, welcome_msg);
+                await this.sendMessage(message.chat.id, help_msg);
 
             } else if (message.text.includes('/help')) {
                 const help_msg = getReply("help", this.user_lang);
@@ -67,27 +67,36 @@ export class Bot {
                     { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
 
             } else {
-                const invalid_msgs = getReply("invalid", this.user_lang);
-                const invalid_index = Math.floor(Math.random() * invalid_msgs.length);
-
-                await this.sendMessage(message.chat.id, invalid_msgs[invalid_index])
+                await this.replyInvalid(message.chat.id);
             }
-        }
-
+        
         // Reply to other types of messages
-        else {
-            const invalid_msgs = getReply("invalid", this.user_lang);
-            const invalid_index = Math.floor(Math.random() * invalid_msgs.length);
-
-            await this.sendMessage(message.chat.id, invalid_msgs[invalid_index])
+        } else {
+            await this.replyInvalid(message.chat.id);
         }
     }
 
     async handleCallbackQuery(callback_query) {
+        if (!callback_query.hasOwnProperty('message')) {
+            console.log("while handleCallbackQuery, no message found as field of callback_query");
+            return;
+        }
+
+        const { data, message } = callback_query;
+
+        if (data.includes('set_lang')) {
+            await this.sendMessage(message.chat.id, getReply("language_set", this.user_lang));
+            await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
+        } else {
+            await this.replyInvalid(callback_query.message.chat.id);
+        }
+    }
+
+    async replyInvalid(chatId) {
         const invalid_msgs = getReply("invalid", this.user_lang);
         const invalid_index = Math.floor(Math.random() * invalid_msgs.length);
 
-        await this.sendMessage(callback_query.from.id, invalid_msgs[invalid_index])
+        await this.sendMessage(chatId, invalid_msgs[invalid_index]);
     }
 
     async getUserLang(userId) {
@@ -117,7 +126,7 @@ export class Bot {
     async sendMessage(chatId, text, buttons = null) {
         if (buttons) {
             await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
-                reply_markup: JSON.stringify({ inline_keyboard: buttons }) });
+                reply_markup: JSON.stringify({ inline_keyboard: [buttons] }) });
         } else {
             await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
         }
@@ -135,7 +144,9 @@ export class Bot {
 
         const apiUrl = `https://api.telegram.org/bot${this.bot_api_token}/${methodName}${query}`;
 
-        await fetch(apiUrl);
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+        console.log(JSON.stringify(result, null, 2));
     }
 
     error(message, status) {

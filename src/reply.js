@@ -56,6 +56,11 @@ export function getReply(msgType, lang, first_name = "") {
             ["en", "Bot language set to *English*\n"],
         ])],
 
+        ["language_emoji", new Map([
+            ["ua", "🇺🇦"],
+            ["en", "🇺🇸"],
+        ])],
+
         ["invalid", new Map([
             ["ua", new Array(
                 "😕 Не знаю, як на це відповідати\n",
