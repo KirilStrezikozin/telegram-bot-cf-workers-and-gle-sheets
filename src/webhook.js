@@ -15,13 +15,13 @@ export class Webhook {
 
     async process(url) {
         switch (url.pathname) {
-            case 'setWebhook':
+            case '/setWebhook':
                 return await this.set();
-            case 'getWebhookInfo':
+            case '/getWebhookInfo':
                 return await this.getInfo();
-            case 'deleteWebhook':
+            case '/deleteWebhook':
                 return await this.unset();
-            case 'getMe':
+            case '/getMe':
                 return await this.getMe();
 
             default:
@@ -30,19 +30,19 @@ export class Webhook {
     }
 
     async set() {
-        return await this.handle(this.api_url + `setWebhook?url=${this.url}&secret_token=${this.bot_api_secret}`);
+        return await this.handle(this.api_url + `/setWebhook?url=${this.url}&secret_token=${this.bot_api_secret}`);
     }
 
     async getInfo() {
-        return await this.handle(this.api_url + `getWebhookInfo`);
+        return await this.handle(this.api_url + `/getWebhookInfo`);
     }
 
     async unset() {
-        return await this.handle(this.api_url + `deleteWebhook`);
+        return await this.handle(this.api_url + `/deleteWebhook`);
     }
 
     async getMe() {
-        return await this.handle(this.api_url + `getMe`);
+        return await this.handle(this.api_url + `/getMe`);
     }
 
     async handle(url) {

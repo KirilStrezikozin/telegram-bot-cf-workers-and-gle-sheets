@@ -20,19 +20,16 @@ export class Handler {
         }
 
         const url = new URL(request.url);
-        this.request = this.processRequest(request);
+        this.processRequest(request);
 
         this.bot = new Bot(url, this.bot_api_token, this.bot_api_secret);
         
-        console.log(this.request.method);
         if (!this.bot.is_active) {
             this.response = this.error("Telegram bot not found", 404);
         }
 
         // Process webhook
         else if (this.request.method === 'GET') {
-            console.log(this.bot_api_token);
-            console.log(url.searchParams.get('bot'));
             if (url.searchParams.get('bot') === this.bot_api_token) {
                 this.response = await this.bot.webhook.process(url);
             } else {
@@ -61,18 +58,19 @@ export class Handler {
         request.content_type = parseInt(request.headers.get('content-type')) || '';
         request.secret = request.headers.get('X-Telegram-Bot-Api-Secret-Token') || '';
 
-        if (request.size && request.content-type) {
-            request.content = await this.getRequestContent(request);
+        this.request = request;
+
+        if (this.request.size && this.request.content-type) {
+            await this.getRequestContent();
         } else {
-            request.content = { message: '' };
+            this.request.content = { message: '' };
         }
 
-        return request;
     }
 
-    async getRequestContent(request) {
-        if (request.content_type.includes('application/json')) return await request.json();
-        else if (request.content_type.includes('text/')) return await request.text();
+    async getRequestContent() {
+        if (this.request.content_type.includes('application/json')) await this.request.json();
+        else if (this.request.content_type.includes('text/')) await this.request.text();
         else return { message: '' };
     }
 
