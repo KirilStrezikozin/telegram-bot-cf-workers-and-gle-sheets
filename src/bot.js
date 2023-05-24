@@ -24,13 +24,13 @@ export class Bot {
         try {
             // Handle incoming message from the user
             if ('message' in content) {
-                //await this.getUserLang(request.content.message.from.id);
+                await this.getUserLang(content.message.from.id);
                 await this.handleMessage(content.message);
             }
 
             // Handle inline callback_query from the user
             else if ('callback_query' in content) {
-                //await this.getUserLang(request.content.callback_query.from.id);
+                await this.getUserLang(content.callback_query.from.id);
                 await this.handleCallbackQuery(content.callback_query);
             }
 
@@ -85,6 +85,9 @@ export class Bot {
         const { data, message } = callback_query;
 
         if (data.includes('set_lang')) {
+            const newUserLang = data.replace('set_lang_', '')
+            await this.setUserLang(callback_query.from.id, newUserLang);
+
             await this.sendMessage(message.chat.id, getReply("language_set", this.user_lang));
             await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
         } else {
@@ -146,7 +149,7 @@ export class Bot {
 
         const response = await fetch(apiUrl);
         const result = await response.json();
-        console.log(JSON.stringify(result, null, 2));
+        console.log(result);
     }
 
     error(message, status) {
