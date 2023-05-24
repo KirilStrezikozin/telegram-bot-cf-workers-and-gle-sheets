@@ -1,12 +1,10 @@
 /**
  * https://github.com/KirilStrezikozin/telegram-bot-cf-workers-and-gle-sheets
- * 
- * Detailed information can be found at https://developers.cloudflare.com/workers/
  */
 
 
 /**
- * Get bot reply message innerText
+ * Get bot reply message text
  */
 export function getReply(msgType, lang, first_name = "") {
     //return "hooray";
@@ -59,7 +57,7 @@ export function getReply(msgType, lang, first_name = "") {
         ])],
 
         ["invalid", new Map([
-            ["ua", [
+            ["ua", new Array([
                 "😕 Не знаю, як на це відповідати\n",
                 "😕 Спробуй ще раз\n",
                 "😕 Упс, що ти мав(ла) на увазі?\n",
@@ -74,9 +72,9 @@ export function getReply(msgType, lang, first_name = "") {
                 "😕 Ех, ніяк не можу тебе зрозуміти\n",
                 "😕 Ой, мої розробники такого не очікували\n",
                 "😕 Можливо, спитай щось інше\n"
-                ]
+                ])
             ],
-            ["en\n", [
+            ["en\n", new Array([
                 "😕 Don't know how to reply to this\n",
                 "😕 Try again\n",
                 "😕 Oops, what did you say?\n",
@@ -91,7 +89,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "😕 Can't get where you're coming from with that\n",
                 "😕 Oh, my developers haven't covered this yet\n",
                 "😕 Maybe say something else?\n"
-                ]
+                ])
             ],
         ])],
     ]);
