@@ -4,123 +4,160 @@
  * Detailed information can be found at https://developers.cloudflare.com/workers/
  */
 
-import * as api from './api.js'
-import { getReply } from './reply.js'
+import { getReply } from "./reply";
+import { Webhook } from "./webhook";
 
 
-/**
- * Handle requests to /endpoint
- * https://core.telegram.org/bots/api#update
- */
-export async function update(event) {
-    // Check secret
-    if (event.request.headers.get('X-Telegram-Bot-Api-Secret-Token') !== BOT_API_SECRET) {
-        return new Response('Unauthorized', { status: 403 });
+export class Bot {
+    constructor(worker_url, bot_api_token, bot_api_secret) {
+        this.bot_api_token = bot_api_token;
+        this.bot_api_secret = bot_api_secret;
+        this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
+        this.webhook = new Webhook(worker_url, bot_api_token, bot_api_secret);
+        this.user_lang = "ua";
+        this.is_alive = true;
     }
 
-    if (event.request.method === 'POST') {
+    async update(request) {
+        const content = await request.json();
 
-        // Read request
-        const update = await event.request.json();
-        // Deal with the response asynchronously
-        event.waitUntil(handleUpdate(update));
+        try {
+            // Handle incoming message from the user
+            if ('message' in content) {
+                await this.getUserLang(content.message.from.id);
+                await this.handleMessage(content.message);
+            }
+
+            // Handle inline callback_query from the user
+            else if ('callback_query' in content) {
+                await this.getUserLang(content.callback_query.from.id);
+                await this.handleCallbackQuery(content.callback_query);
+            }
+
+            else console.log("Unhandled request content:\n" + content);
+        }
+        catch (error) {
+            console.log(error);
+            return this.error(error, 400);
+        }
+
+        return new Response("Ok.", { status: 200 });
     }
 
-    return new Response("Ok");
-}
+    async handleMessage(message) {
+        // Reply to text message
+        if (message.hasOwnProperty('text')) {
+            if (message.text.includes('/start')) {
+                const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
+                const help_msg = getReply("help", this.user_lang);
 
+                await this.sendMessage(message.chat.id, welcome_msg);
+                await this.sendMessage(message.chat.id, help_msg);
 
-/**
- * Handle event update
- */
-async function handleUpdate(update) {
-    if ('message' in update) {
-        const lang = "ua";
-        // const userLang = 'LANG_' + update.message.from.id;
+            } else if (message.text.includes('/help')) {
+                const help_msg = getReply("help", this.user_lang);
 
-        // // Get user's preferred language
-        // let lang = await kv_bot_prefs.get(userLang);
+                await this.sendMessage(message.chat.id, help_msg);
 
-        // // If not found, put a new LANG entry for the user
-        // if (lang === null) {
-        //     await kv_bot_prefs.put(userLang, "ua");
-        //     lang = "ua";
-        // }
+            } else if (message.text.includes('/language')) {
+                const lang_msg = getReply("language", this.user_lang);
 
-        handleMessage(update.message, lang);
-    } 
+                await this.sendMessage(message.chat.id, lang_msg, [
+                    { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
+                    { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
 
-    if ('callback_query' in update) {
-        const lang = "ua";
-        // const userLang = 'LANG_' + update.message.from.id;
-
-        // // Get user's preferred language
-        // let lang = await kv_bot_prefs.get(userLang);
-
-        // // If not found, put a new LANG entry for the user
-        // if (lang === null) {
-        //     await kv_bot_prefs.put(userLang, "ua");
-        //     lang = "ua";
-        // }
-
-        handleCallback_query(update.callback_query, lang);
+            } else {
+                await this.replyInvalid(message.chat.id);
+            }
+        
+        // Reply to other types of messages
+        } else {
+            await this.replyInvalid(message.chat.id);
+        }
     }
-}
 
+    async handleCallbackQuery(callback_query) {
+        if (!callback_query.hasOwnProperty('message')) {
+            console.log("while handleCallbackQuery, no message found as field of callback_query");
+            return;
+        }
 
-/**
- * Handle incoming message
- */
-async function handleMessage(message, lang) { 
-    if (message.text.startsWith('/start')) {
-        const welcome_msg = getReply("welcome", lang, message.from.first_name);
-        const help_msg = getReply("help", lang);
+        const { data, message } = callback_query;
 
-        const r1 = await api.sendMessage(message.chat.id, welcome_msg).then(
-            async () => { await api.sendMessage(message.chat.id, help_msg); }
-        );
-        return r1;
+        if (data.includes('set_lang')) {
+            const newUserLang = data.replace('set_lang_', '')
+            await this.setUserLang(callback_query.from.id, newUserLang);
 
-        const r2 = await api.sendMessage(message.chat.id, help_msg);
-        return r2;
-
-    } else if (message.text.startsWith('/help')) {
-        const help_msg = getReply("help", lang);
-        return api.sendMessage(message.chat.id, help_msg);
-
-    } else if (message.text.startsWith('/language')) {
-        const lang_msg = getReply("language", lang);
-
-        return api.sendMessage(message.chat.id, lang_msg, buttons = [
-            { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
-            { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
+            await this.sendMessage(message.chat.id, getReply("language_set", this.user_lang));
+            await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
+        } else {
+            await this.replyInvalid(callback_query.message.chat.id);
+        }
     }
-}
 
+    async replyInvalid(chatId) {
+        const invalid_msgs = getReply("invalid", this.user_lang);
+        const invalid_index = Math.floor(Math.random() * invalid_msgs.length);
 
-/**
- * Handle incoming callback_query (inline button press)
- * https://core.telegram.org/bots/api#message
- */
-async function handleCallback_query(callback_query, lang) {
-    if (callback_query.data === 'set_lang_ua') {
-        // await kv_bot_prefs.put(`LANG_${userId}`, value);
+        await this.sendMessage(chatId, invalid_msgs[invalid_index]);
+    }
 
-        await api.sendMessage(callback_query.message.chat.id, "🇺🇦");
+    async getUserLang(userId) {
+        const userIdStr = userId.toString();
+        let lang = "ua";
 
-        const lang_set_msg = getReply("language_set", lang)
-        return api.answerCallbackQuery(callback_query.id, lang_set_msg);
+        const stored_lang = await kv_bot_prefs.get(`LANG_${userIdStr}`);
 
-    } else if (callback_query.data === 'set_lang_en') {
-        // await kv_bot_prefs.put(`LANG_${userId}`, value);
+        if (stored_lang) {
+            lang = stored_lang.toString();
+        } else {
+            await kv_bot_prefs.put(`LANG_${userIdStr}`, "ua");
+            lang = "ua";
+        }
 
-        await api.sendMessage(callback_query.message.chat.id, "🇺🇸");
+        this.user_lang = lang;
+    }
 
-        const lang_set_msg = getReply("language_set", lang)
-        return api.answerCallbackQuery(callback_query.id, lang_set_msg);
+    async setUserLang(userId, value) {
+        const userIdStr = userId.toString();
 
-    } else {
-        const invalid_msg = getReply("invalid", lang);
-        return api.sendMessage(callback_query.message.chat.id, invalid_msg);
+        await kv_bot_prefs.put(`LANG_${userIdStr}`, value.toString());
+
+        this.user_lang = value;
+    }
+
+    async sendMessage(chatId, text, buttons = null) {
+        if (buttons) {
+            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
+                reply_markup: JSON.stringify({ inline_keyboard: [buttons] }) });
+        } else {
+            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
+        }
+    }
+
+    async answerCallbackQuery(callbackQueryId, text) {
+        return this.callApi('answerCallbackQuery', { callback_query_id: callbackQueryId, text: text });
+    }
+
+    async callApi(methodName, params = null) {
+        let query = '';
+        if (params) {
+            query = '?' + new URLSearchParams(params).toString();
+        }
+
+        const apiUrl = `https://api.telegram.org/bot${this.bot_api_token}/${methodName}${query}`;
+
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+        console.log(result);
+    }
+
+    error(message, status) {
+        const info = {
+            status: status,
+            headers: { 'content-type': 'application/json' }
+        };
+
+        return new Response(JSON.stringify(message, null, 2), info);
     }
 }
