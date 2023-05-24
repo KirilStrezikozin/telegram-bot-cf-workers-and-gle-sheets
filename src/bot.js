@@ -55,7 +55,7 @@ export class Bot {
                 const help_msg = getReply("help", this.user_lang);
 
                 await this.sendMessage(message.chat.id, welcome_msg, [
-                    { text: getReply("invoke_about_us", this.user_lang), callback_data: 'invoke_about_use' }]);
+                    { text: getReply("invoke_about_us", this.user_lang), callback_data: 'invoke_about_us' }]);
                 await this.sendMessage(message.chat.id, help_msg);
 
             } else if (message.text.includes('/stop')) {
@@ -123,8 +123,8 @@ export class Bot {
             await this.sendMessage(message.chat.id, getReply("language_set", this.user_lang));
             await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
 
-        } else if (data === 'invoke_about_use') {
-            await this.sendMessage(message.chat.id, "about us.");
+        } else if (data === 'invoke_about_us') {
+            await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang));
 
         } else {
             await this.replyRandom(callback_query.message.chat.id, "invalid");

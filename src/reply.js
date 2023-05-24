@@ -53,8 +53,24 @@ export function getReply(msgType, lang, first_name = "") {
         ])],
 
         ["about_us", new Map([
-            ["ua", "💎 Про розробників бота"],
-            ["en", "💎 About bot developers"],
+            ["ua",
+                "💎 "
+            ],
+            ["en",
+                "🎩 Historic-Archivarius is your digital history friend or, maybe it'll be better to say, your fast cheat sheet for the History of Ukraine that allows " +
+                "anyone curious or who are preparing for exams to rapidly search information about events, dates, and people based on a simple query.\n\n" +
+                "💡 The benefit of such system is, obviously, speed but also it triggers your brain to associate long information that has to be memorised with short and precise keywords or queries. " +
+                "As a result, there's a linkage formed in your memory and the ability to connect small chunks of text with larger ones which tremendously helps in exams or tests " +
+                "where you're at advantage if you can relate words or pieces of text in the question properly to give correct answers faster which will save you a ton of time to be able to focus " +
+                "more when you encounter something harder than usual.\n\n" +
+                "⚙️ This awesome helper was created by a team of students at [Educator Online School](https://educator.weblium.site/) as part of the end-of-term project creation week " +
+                "where each class gathers up a team and devises their initiative. We embarked on the development of a Telegram bot.\n\n" +
+                "At first, having no knowledge on how to make bots, it felt disastrous. But we strived to accomplish it and, little by little, we made our way through to where we're right now. " +
+                "What also had a profound impact on the success is the team itself. A mixture of a programmer, writer, artist, speaker, teacher, and history lovers altogether endeavored to create.\n\n" +
+                "👇 Make sure you check out these beautiful links below. One will get you to our school website, another - to project code on GitHub, " +
+                "which you can explore to get a closer look on how the bot works internally. If you like our bot and thought about supporting its further development, dm @heiskempler.\n\n" +
+                "🙏 Thank you!\n", 
+            ],
         ])],
 
         ["language", new Map([
