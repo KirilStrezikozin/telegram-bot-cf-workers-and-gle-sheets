@@ -38,13 +38,15 @@ export class Handler {
         }
 
         // Handle bot update
-        else if (this.request.method === 'POST' && this.request.secret === this.bot_api_secret) {
+        // else if (this.request.method === 'POST' && this.request.secret === this.bot_api_secret) {
+        else if (this.request.method === 'POST') {
+            this.response = await this.bot.update(this.request);
             //if (this.request.size > 6 && this.request.content.message && this.request.content_type.includes('application/json')) {
-            if (this.request.size > 6 && this.request.content_type.includes('application/json')) {
-                this.response = await this.bot.update(this.request);
-            } else {
-                this.response = this.error("Invalid request content type or body", 403);
-            }
+            // if (this.request.size > 6 && this.request.content_type.includes('application/json')) {
+            //     this.response = await this.bot.update(this.request);
+            // } else {
+            //     this.response = this.error("Invalid request content type or body", 403);
+            // }
         }
 
         else this.response = this.error("Bad or invalid request.", 400);
@@ -60,11 +62,12 @@ export class Handler {
 
         this.request = request;
 
-        if (this.request.size && this.request.content-type) {
-            await this.getRequestContent();
-        } else {
-            this.request.content = { message: '' };
-        }
+        // await this.getRequestContent();
+        // if (this.request.size && this.request.content-type) {
+        //     await this.getRequestContent();
+        // } else {
+        //     this.request.content = { message: '' };
+        // }
 
     }
 

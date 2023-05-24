@@ -19,20 +19,23 @@ export class Bot {
     }
 
     async update(request) {
+        const u = await request.json();
         try {
-            // Handle incoming message from the user
-            if ('message' in request.content) {
-                await this.getUserLang(request.content.message.from.id);
-                await this.handleMessage(request.content.message);
-            }
+            await this.sendMessage(u.message.chat.id, "Hello");
 
-            // Handle inline callback_query from the user
-            else if ('callback_query' in request.content) {
-                await this.getUserLang(request.content.callback_query.from.id);
-                await this.handleCallbackQuery(request.content.callback_query);
-            }
+            // // Handle incoming message from the user
+            // if ('message' in request.content) {
+            //     //await this.getUserLang(request.content.message.from.id);
+            //     await this.handleMessage(request.content.message);
+            // }
 
-            else console.log(request.content);
+            // // Handle inline callback_query from the user
+            // else if ('callback_query' in request.content) {
+            //     //await this.getUserLang(request.content.callback_query.from.id);
+            //     await this.handleCallbackQuery(request.content.callback_query);
+            // }
+
+            // else console.log(request.content);
         }
         catch (error) {
             console.log(error);
@@ -44,6 +47,9 @@ export class Bot {
 
     async handleMessage(message) {
         // Reply to text message
+        await this.sendMessage(message.chat.id, message.toString());
+        return;
+
         if (message.hasOwnProperty('text')) {
             if (message.text.startsWith('/start')) {
                 const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
