@@ -66,8 +66,8 @@ export function getReply(msgType, lang, first_name = "") {
             ["ua", new Array(
                 `👋 Дякую за твою вірність та активність, ${first_name}!\n\n` +
                 "Мені було надзвичайно цікаво розділяти з тобою захоплюючий шлях вивчення історії! Я сподіваюся, мої відповіді надавали тобі нові відкриття і знання.\n\n" +
-                "💯 Історія - неймовірна й важлива, і нам всім слід споглядати її красу та користь з нових перспектив!\n\n" +
-                "🥺", 
+                "💯 Історія - неймовірна й важлива, і нам всім слід споглядати її красу та користь!\n\n" +
+                "🥺 ", 
 
                 new Array(
                     "Був радий тобі допомогти!\n",
@@ -83,7 +83,7 @@ export function getReply(msgType, lang, first_name = "") {
                 `👋 Thank you for your activity, ${first_name}!\n\n` +
                 "It has been an exciting journey of exploring history with you! I hope that my answers helped you gain new knowledge and conquer new horizons.\n\n" +
                 "💯 History is immensely significant and vitally important in our lives!\n\n" +
-                "🥺", 
+                "🥺 ", 
 
                 new Array(
                     "It was a pleasure to help you!\n",

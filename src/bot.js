@@ -57,6 +57,16 @@ export class Bot {
                 await this.sendMessage(message.chat.id, welcome_msg);
                 await this.sendMessage(message.chat.id, help_msg);
 
+            } else if (message.text.includes('/stop')) {
+                const stop_reply = getReply("stop", this.user_lang, message.from.first_name);
+                
+                const stop_msg = stop_reply[0];
+                const bye_replies = stop_reply[1];
+                const index = Math.floor(Math.random() * bye_replies.length);
+                const bye_reply = bye_replies[index];
+
+                await this.sendMessage(message.chat.id, stop_msg + bye_reply);
+
             } else if (message.text.includes('/help')) {
                 const help_msg = getReply("help", this.user_lang);
 
