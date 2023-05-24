@@ -30,7 +30,8 @@ export class Webhook {
     }
 
     async set() {
-        return await this.handle(this.api_url + `/setWebhook?url=${this.url}&secret_token=${this.bot_api_secret}`);
+        const webhookUrl = `${this.worker_url.protocol}//${this.worker_url.hostname}`; 
+        return await this.handle(this.api_url + `/setWebhook?url=${webhookUrl}&secret_token=${this.bot_api_secret}`);
     }
 
     async getInfo() {
