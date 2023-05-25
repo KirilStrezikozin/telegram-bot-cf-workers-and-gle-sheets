@@ -68,6 +68,13 @@ export class Bot {
                 await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
                     getReply("about_us_keyboard", this.user_lang));
 
+            } else if (message.text.includes('/random')) {
+                // unsupported in browser version
+                 await this.sendDice(message.chat.id);
+
+                // can use this indtead, but no animation
+                // await this.sendMessage(message.chat.id, '🎰');
+
             } else if (text_lns.includes("привіт") || text_lns.includes("hi") || text_lns.includes("hey") || text_lns.includes("hello")) {
                 await this.sendMessage(message.chat.id, "👋");
                 await this.replyRandom(message.chat.id, "hi");
@@ -210,6 +217,10 @@ export class Bot {
         } else {
             await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
         }
+    }
+
+    async sendDice(chatId) {
+        await this.callApi('sendDice', { chat_id: chatId, emoji: '🎰' });
     }
 
     async answerCallbackQuery(callbackQueryId, text) {
