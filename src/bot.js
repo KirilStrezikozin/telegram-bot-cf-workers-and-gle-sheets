@@ -16,6 +16,7 @@ export class Bot {
         this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
         this.webhook = new Webhook(worker_url, bot_api_token, bot_api_secret);
         this.user_lang = "ua";
+        this.sendMessageDelay = 400;
         this.is_alive = true;
     }
 
@@ -240,24 +241,26 @@ export class Bot {
 
         const lifehack_replies = lifehacks[2].get(`lifehack_${type}`);
         for (const reply of lifehack_replies) {
-            // because we don't want to blow user's ears off with a bazillion of replies sent in a split second,
-            // wait 1 second before sending each reply message 
-            await new Promise(response => setTimeout(response, 1000));
             await this.sendMessage(message.chat.id, reply);
         }
     }
 
-    async sendMessage(chatId, text, buttons = null, keyboard = null) {
+    async sendMessage(chatId, text, buttons = null, keyboard = null, disable_notification = false) {
+        await this.sendDelay(this.sendMessageDelay, chatId);
+
         if (buttons) {
-            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
+            await this.callApi('sendMessage', { chat_id: chatId, text: text,
+                parse_mode: 'Markdown', disable_notification: disable_notification,
                 reply_markup: JSON.stringify({ inline_keyboard: [buttons] }) });
 
         } else if (keyboard) {
-            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
+            await this.callApi('sendMessage', { chat_id: chatId, text: text,
+                parse_mode: 'Markdown', disable_notification: disable_notification,
                 reply_markup: JSON.stringify({keyboard: keyboard, one_time_keyboard: true })});
 
         } else {
-            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
+            await this.callApi('sendMessage', { chat_id: chatId, text: text,
+                parse_mode: 'Markdown', disable_notification: disable_notification });
         }
     }
 
@@ -267,6 +270,18 @@ export class Bot {
 
     async answerCallbackQuery(callbackQueryId, text) {
         return this.callApi('answerCallbackQuery', { callback_query_id: callbackQueryId, text: text });
+    }
+
+    /*
+     * Send a chat action (hint that bot is typing something) and
+     * wait the given amount of milliseconds to not blow user's ears off with a bazillion of replies sent in a split second.
+     */
+    async sendDelay(ms, chatId = null, chatAction = 'typing') {
+        if (chatId) {
+            this.callApi('sendChatAction', { chat_id: chatId, action: chatAction});
+        }
+
+        await new Promise(response => setTimeout(response, ms));
     }
 
     async callApi(methodName, params = null) {
