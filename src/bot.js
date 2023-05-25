@@ -155,6 +155,13 @@ export class Bot {
         this.user_lang = value;
     }
 
+    async deleteUserLang(userId) {
+        const userIdStr = userId.toString();
+
+        await kv_bot_prefs.delete(`LANG_${userIdStr}`);
+        // this.user_lang = "ua";
+    }
+
     async sendWelcome(message) {
         const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
 
@@ -190,6 +197,8 @@ export class Bot {
         const bye_replies = stop_reply[1];
         const index = Math.floor(Math.random() * bye_replies.length);
         const bye_reply = bye_replies[index];
+
+        await this.deleteUserLang(message.from.id);
 
         await this.sendMessage(message.chat.id, stop_msg + bye_reply);
     }
