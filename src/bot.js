@@ -80,6 +80,10 @@ export class Bot {
                     { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
                     { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
 
+            } else if (message.text.includes('/about')) {
+                await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
+                    getReply("about_us_keyboard", this.user_lang));
+
             } else if (text_lns.includes("привіт") || text_lns.includes("hi") || text_lns.includes("hey") || text_lns.includes("hello")) {
                 await this.sendMessage(message.chat.id, "👋");
                 await this.replyRandom(message.chat.id, "hi");
@@ -124,10 +128,8 @@ export class Bot {
             await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
 
         } else if (data === 'invoke_about_us') {
-            await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang), [
-                { text: "Educator School", url: '' },
-                { text: "Project on GitHub", url: '' }
-            ]);
+            await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
+                getReply("about_us_keyboard", this.user_lang));
 
         } else {
             await this.replyRandom(callback_query.message.chat.id, "invalid");
