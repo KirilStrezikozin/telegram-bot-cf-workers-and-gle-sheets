@@ -117,11 +117,104 @@ export function getReply(msgType, lang, first_name = "") {
             ["en", "Search"],
         ])],
 
+        ["lifehack", new Map([
+            ["ua", new Array(
+                `👋 Привіт, ${first_name}!\n\n` +
+                "🧐 Якщо, користуючись нашим ботом, ти зацікавився у такій хитрій науці як історія, ось тобі невеликий список порад. Мершій обирай один з лайфаків під твоєю клавіатурою!\n",
+                new Map([
+                    ["lifehack_source", new Array(
+                        "🔎 *Джерела*\n" +
+                        "Ми, історики, - творчі люди, тому і ти не будь односторонньою людиною, а бери інформацію для своїх робіт як мінімум з троьх джерел для запобігання впливу моралі у своїх роботі.\n"
+                        )
+                    ],
+                    ["lifehack_understand", new Array(
+                        "🕵️ *Розуміння періоду*\n" +
+                        "Для поглибленого вивчення історичного періоду вивчай біографії ключових людей. Це допоможе тобі краще зрозуміти, яка ситуація була у культурній та соціальній сфері того часу.\n"
+                        )
+                    ],
+                    ["lifehack_memory", new Array(
+                        "🧠  *Запам'ятовування дат*\n" +
+                        "Якщо запам’ятовування дат дається тобі складно, є два способи для поглегшення цієї задачі:\n",
+
+                        "🔥 *Перший спосіб* - розбивати дати на дві частини. Наприклад, 1799 розбиваємо, і виходить 17-99.\n",
+
+                        "🔥 *Другий* - асоціювати дати з чимось. Це може бути будь-що від форми цифр до власних асоціацій.\n"
+                        )
+                    ],
+                    ["lifehack_more", new Array(
+                        "🥇 *Як дізнатися більше*\n" +
+                        "Щоб ще більше зацікавитись історією, потворюй ці кроки:\n",
+
+                        "⭐ Для початку обери собі період, дату або подію.\n",
+                        "⭐ Вивчай її настільки, наскільки зможеш.\n",
+                        "⭐ Відштовхуйся від вивченого назад і вперед, щоб дізнаватись переісторію або наслідки. В результаті вивчиш набагато більше нових і цікавих подій.\n"
+                        )
+                    ],
+                    ["lifehack_read", new Array(
+                        "📖 *Література*\n" +
+                        "Ось деяка якісна література від нас. Вона підійде як для новачків, так і для сильних істориків:\n",
+
+                        "⚡ __*Історія Риму - Теодор Момзен*__\n",
+                        "⚡ __*Mein Kampf - Адольф Гітлер*__\n",
+                        "⚡ __*Історія занепаду та загибелі Римської імперії - Єдуард Гіббон*__\n",
+                        "⚡ __*Брами Європи - Сергій Плохій*__\n",
+                        "⚡ __*Матеріальна цивілізація, єкономіка і капіталізм - Фернан Бордель*__\n"
+                        )
+                    ]
+                ])
+            )],
+            ["en", new Array(
+                `👋 Hi, ${first_name}!\n\n` +
+                "🧐 If you're interested in the fascinating science of history, here are some handy tips for you. Choose one of the life hacks right under your keyboard!\n",
+                new Map([
+                    ["lifehack_source", new Array(
+                        "🔎 *Sources*\n" +
+                        "We, historians, are creative people, and so should you be. Gather information for your work from at least three different sources to avoid the influence of bias in your research.\n"
+                        )
+                    ],
+                    ["lifehack_understand", new Array(
+                        "🕵️ *Understand the period*\n" +
+                        "For a deeper understanding of a historical period, delve into the biographies of key individuals. This will help you better grasp the cultural and social dynamics of that time.\n"
+                        )
+                    ],
+                    ["lifehack_memory", new Array(
+                        "🧠  *Memorizing dates*\n" +
+                        "If remembering dates is challenging for you, there are two methods to make it easier:\n",
+
+                        "🔥 The first method is to break down dates into two parts. For example, split 1799 into 17-99.\n",
+
+                        "🔥 The second method is to associate dates with something. It can be anything from the numerical shape to your personal associations.\n"
+                        )
+                    ],
+                    ["lifehack_more", new Array(
+                        "🥇 *Learn more*\n" +
+                        "To further ignite your interest in history, follow these steps:\n",
+
+                        "⭐ Start by choosing a period, date, or event.\n",
+                        "⭐ Study it as much as you can.\n",
+                        "⭐ Connect what you've learned backward and forward to discover the prehistory or consequences. As a result, you'll uncover many more fascinating events.\n"
+                        )
+                    ],
+                    ["lifehack_read", new Array(
+                        "📖 *Literature*\n" +
+                        "Here is some quality literature from us. It is suitable for both beginners and seasoned historians:\n",
+
+                        "⚡ __* History of Rome - Theodor Mommsen*__\n",
+                        "⚡ __*Mein Kampf - Adolf Hitler*__\n",
+                        "⚡ __*The History of the Decline and Fall of the Roman Empire - Edward Gibbon*__\n",
+                        "⚡ __*Gates of Europe - Serhii Plokhy*__\n",
+                        "⚡ __*The Wheels of Commerce: Civilization and Capitalism - Fernand Braude*__\n"
+                        )
+                    ]
+                ])
+            )],
+        ])],
+
         ["stop", new Map([
             ["ua", new Array(
                 `👋 Дякую за твою вірність та активність, ${first_name}!\n\n` +
                 "Мені було надзвичайно цікаво розділяти з тобою захоплюючий шлях вивчення історії! Я сподіваюся, мої відповіді надавали тобі нові відкриття і знання.\n\n" +
-                "💯 Історія - неймовірна й важлива, і нам всім слід споглядати її красу та користь!\n\n" +
+                "💯 Пам'ятайт, історія - це захоплива подорож, яка допомагає нам розуміти світ навколо нас і самих себе.!\n\n" +
                 "🥺 ", 
 
                 new Array(
@@ -137,7 +230,7 @@ export function getReply(msgType, lang, first_name = "") {
             ["en", new Array(
                 `👋 Thank you for your activity, ${first_name}!\n\n` +
                 "It has been an exciting journey of exploring history with you! I hope that my answers helped you gain new knowledge and conquer new horizons.\n\n" +
-                "💯 History is immensely significant and vitally important in our lives!\n\n" +
+                "💯 Remember, history is a captivating journey that helps us understand the world around us and ourselves!\n\n" +
                 "🥺 ", 
 
                 new Array(
