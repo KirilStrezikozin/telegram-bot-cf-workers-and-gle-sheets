@@ -124,7 +124,10 @@ export class Bot {
             await this.sendMessage(message.chat.id, getReply("language_emoji", this.user_lang));
 
         } else if (data === 'invoke_about_us') {
-            await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang));
+            await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang), [
+                { text: "Educator School", url: '' },
+                { text: "Project on GitHub", url: '' }
+            ]);
 
         } else {
             await this.replyRandom(callback_query.message.chat.id, "invalid");
