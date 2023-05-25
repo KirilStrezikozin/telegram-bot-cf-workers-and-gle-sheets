@@ -166,7 +166,8 @@ export class Bot {
         const help_msg = getReply("help", this.user_lang);
         await getRandom("title", this.user_lang).then(async title => {
             const data = `search\_${title}`;
-            const text = `${title}`;
+            const searchWord = getReply("search_word", this.user_lang);
+            const text = `${searchWord}: ${title}`;
             await this.sendMessage(message.chat.id, help_msg, [
                 { text: text, callback_data: data}
             ]);

@@ -112,6 +112,11 @@ export function getReply(msgType, lang, first_name = "") {
             ["en", "🇺🇸"],
         ])],
 
+        ["search_word", new Map([
+            ["ua", "Шукати"],
+            ["en", "Search"],
+        ])],
+
         ["stop", new Map([
             ["ua", new Array(
                 `👋 Дякую за твою вірність та активність, ${first_name}!\n\n` +
