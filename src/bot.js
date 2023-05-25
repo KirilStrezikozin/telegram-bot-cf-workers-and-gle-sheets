@@ -110,7 +110,6 @@ export class Bot {
 
                 await this.sendMessage(message.chat.id, bye_replies[index]);
 
-
             } else {
                 await this.replyRandom(message.chat.id, "invalid");
             }
@@ -241,6 +240,9 @@ export class Bot {
 
         const lifehack_replies = lifehacks[2].get(`lifehack_${type}`);
         for (const reply of lifehack_replies) {
+            // because we don't want to blow user's ears off with a bazillion of replies sent in a split second,
+            // wait 1 second before sending each reply message 
+            await new Promise(response => setTimeout(response, 1000));
             await this.sendMessage(message.chat.id, reply);
         }
     }
