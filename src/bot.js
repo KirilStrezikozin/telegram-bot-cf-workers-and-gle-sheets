@@ -64,16 +64,34 @@ export class Bot {
             } else if (message.text.includes('/language')) {
                 await this.sendLangToggle(message);
 
-            } else if (message.text.includes('/about')) {
-                await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
-                    getReply("about_us_keyboard", this.user_lang));
-
             } else if (message.text.includes('/random')) {
                 // unsupported in browser version
                  await this.sendDice(message.chat.id);
 
                 // can use this indtead, but no animation
                 // await this.sendMessage(message.chat.id, '🎰');
+
+            } else if (message.text.includes('/about')) {
+                await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
+                    getReply("about_us_keyboard", this.user_lang));
+
+            } else if (message.text.includes('/lifehack')) {
+                await this.sendLifehack(message);
+
+            } else if (message.text.includes("🔎 Sources") || message.text.includes("🔎 Джерела")) {
+                await this.replyLifehack(message, "source");
+
+            } else if (message.text.includes("🕵️ Understand the period") || message.text.includes("🕵️ Розуміння періоду")) {
+                await this.replyLifehack(message, "understand");
+
+            } else if (message.text.includes("🧠 Memorizing dates") || message.text.includes("🧠 Запам'ятовування дат")) {
+                await this.replyLifehack(message, "memory");
+
+            } else if (message.text.includes("🥇 Learn more") || message.text.includes("🥇 Як дізнатися більше")) {
+                await this.replyLifehack(message, "more");
+
+            } else if (message.text.includes("📖 Literature") || message.text.includes("📖 Література")) {
+                await this.replyLifehack(message, "read");
 
             } else if (text_lns.includes("привіт") || text_lns.includes("hi") || text_lns.includes("hey") || text_lns.includes("hello")) {
                 await this.sendMessage(message.chat.id, "👋");
@@ -210,10 +228,32 @@ export class Bot {
         await this.sendMessage(message.chat.id, stop_msg + bye_reply);
     }
 
-    async sendMessage(chatId, text, buttons = null) {
+    async sendLifehack(message) {
+        const lifehack_replies = getReply("lifehack", this.user_lang, message.from.first_name);
+
+        const lifehack_msg = lifehack_replies[0];
+        const lifehack_keyboard = lifehack_replies[1];
+        await this.sendMessage(message.chat.id, lifehack_msg, null, lifehack_keyboard);
+    }
+
+    async replyLifehack(message, type) {
+        const lifehacks = getReply("lifehack", this.user_lang, message.from.first_name);
+
+        const lifehack_replies = lifehacks[2].get(`lifehack_${type}`);
+        for (const reply of lifehack_replies) {
+            await this.sendMessage(message.chat.id, reply);
+        }
+    }
+
+    async sendMessage(chatId, text, buttons = null, keyboard = null) {
         if (buttons) {
             await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
                 reply_markup: JSON.stringify({ inline_keyboard: [buttons] }) });
+
+        } else if (keyboard) {
+            await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown',
+                reply_markup: JSON.stringify({keyboard: keyboard, one_time_keyboard: true })});
+
         } else {
             await this.callApi('sendMessage', { chat_id: chatId, text: text, parse_mode: 'Markdown' });
         }

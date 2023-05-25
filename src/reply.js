@@ -31,7 +31,9 @@ export function getReply(msgType, lang, first_name = "") {
                 "Тисни в моєму меню:\n" +
                 "/help - відправлю це повідомлення знову\n" +
                 "/language - змінюй мову\n" +
-                "/random - випадкова цікавинка\n\n" +
+                "/random - випадкова цікавинка\n" +
+                "/about - про бота\n" +
+                "/lifehack - корисні лайфхаки\n\n" +
                 "✨ *Хай щастить!*\n"
             ],
             ["en",
@@ -42,7 +44,9 @@ export function getReply(msgType, lang, first_name = "") {
                 "Press in my menu:\n" +
                 "/help - resend this message\n" +
                 "/language - change the language\n" +
-                "/random - a random history fact\n\n" +
+                "/random - a random history fact\n" +
+                "/about - about the bot\n" +
+                "/lifehack - history lifehacks\n\n" +
                 "✨ Good luck!\n"
             ],
         ])],
@@ -120,11 +124,16 @@ export function getReply(msgType, lang, first_name = "") {
         ["lifehack", new Map([
             ["ua", new Array(
                 `👋 Привіт, ${first_name}!\n\n` +
-                "🧐 Якщо, користуючись нашим ботом, ти зацікавився у такій хитрій науці як історія, ось тобі невеликий список порад. Мершій обирай один з лайфаків під твоєю клавіатурою!\n",
+                "🧐 Якщо, користуючись нашим ботом, ти зацікавився у такій хитрій науці як історія, ось тобі невеликий список порад. Мершій *обирай один з лайфаків під твоєю клавіатурою*!\n",
+                new Array(
+                    new Array({text: "🔎 Джерела"}, {text: "🕵️ Розуміння періоду"}),
+                    new Array({text: "🧠 Запам'ятовування дат"}),
+                    new Array({text: "🥇 Як дізнатися більше"}, {text: "📖 Література"}),
+                ),
                 new Map([
                     ["lifehack_source", new Array(
                         "🔎 *Джерела*\n" +
-                        "Ми, історики, - творчі люди, тому і ти не будь односторонньою людиною, а бери інформацію для своїх робіт як мінімум з троьх джерел для запобігання впливу моралі у своїх роботі.\n"
+                        "Ми, історики, - творчі люди, тому і ти не будь односторонньою людиною, а бери інформацію для своїх робіт як мінімум з трьох джерел для запобігання впливу моралі у своїх роботі.\n"
                         )
                     ],
                     ["lifehack_understand", new Array(
@@ -133,7 +142,7 @@ export function getReply(msgType, lang, first_name = "") {
                         )
                     ],
                     ["lifehack_memory", new Array(
-                        "🧠  *Запам'ятовування дат*\n" +
+                        "🧠 *Запам'ятовування дат*\n" +
                         "Якщо запам’ятовування дат дається тобі складно, є два способи для поглегшення цієї задачі:\n",
 
                         "🔥 *Перший спосіб* - розбивати дати на дві частини. Наприклад, 1799 розбиваємо, і виходить 17-99.\n",
@@ -154,18 +163,23 @@ export function getReply(msgType, lang, first_name = "") {
                         "📖 *Література*\n" +
                         "Ось деяка якісна література від нас. Вона підійде як для новачків, так і для сильних істориків:\n",
 
-                        "⚡ __*Історія Риму - Теодор Момзен*__\n",
-                        "⚡ __*Mein Kampf - Адольф Гітлер*__\n",
-                        "⚡ __*Історія занепаду та загибелі Римської імперії - Єдуард Гіббон*__\n",
-                        "⚡ __*Брами Європи - Сергій Плохій*__\n",
-                        "⚡ __*Матеріальна цивілізація, єкономіка і капіталізм - Фернан Бордель*__\n"
+                        "⚡ _Історія Риму - Теодор Момзен_\n",
+                        "⚡ _Mein Kampf - Адольф Гітлер_\n",
+                        "⚡ _Історія занепаду та загибелі Римської імперії - Єдуард Гіббон_\n",
+                        "⚡ _Брами Європи - Сергій Плохій_\n",
+                        "⚡ _Матеріальна цивілізація, єкономіка і капіталізм - Фернан Бордель_\n"
                         )
                     ]
                 ])
             )],
             ["en", new Array(
                 `👋 Hi, ${first_name}!\n\n` +
-                "🧐 If you're interested in the fascinating science of history, here are some handy tips for you. Choose one of the life hacks right under your keyboard!\n",
+                "🧐 If you're interested in the fascinating science of history, here are some handy tips for you. *Choose one of the life hacks right under your keyboard*!\n",
+                new Array(
+                    new Array({text: "🔎 Sources"}, {text: "🕵️ Understand the period"}),
+                    new Array({text: "🧠 Memorizing dates"}),
+                    new Array({text: "🥇 Learn more"}, {text: "📖 Literature"})
+                ),
                 new Map([
                     ["lifehack_source", new Array(
                         "🔎 *Sources*\n" +
@@ -178,7 +192,7 @@ export function getReply(msgType, lang, first_name = "") {
                         )
                     ],
                     ["lifehack_memory", new Array(
-                        "🧠  *Memorizing dates*\n" +
+                        "🧠 *Memorizing dates*\n" +
                         "If remembering dates is challenging for you, there are two methods to make it easier:\n",
 
                         "🔥 The first method is to break down dates into two parts. For example, split 1799 into 17-99.\n",
@@ -199,11 +213,11 @@ export function getReply(msgType, lang, first_name = "") {
                         "📖 *Literature*\n" +
                         "Here is some quality literature from us. It is suitable for both beginners and seasoned historians:\n",
 
-                        "⚡ __* History of Rome - Theodor Mommsen*__\n",
-                        "⚡ __*Mein Kampf - Adolf Hitler*__\n",
-                        "⚡ __*The History of the Decline and Fall of the Roman Empire - Edward Gibbon*__\n",
-                        "⚡ __*Gates of Europe - Serhii Plokhy*__\n",
-                        "⚡ __*The Wheels of Commerce: Civilization and Capitalism - Fernand Braude*__\n"
+                        "⚡ _History of Rome - Theodor Mommsen_\n",
+                        "⚡ _Mein Kampf - Adolf Hitler_\n",
+                        "⚡ _The History of the Decline and Fall of the Roman Empire - Edward Gibbon_\n",
+                        "⚡ _Gates of Europe - Serhii Plokhy_\n",
+                        "⚡ _The Wheels of Commerce: Civilization and Capitalism - Fernand Braude_\n"
                         )
                     ]
                 ])
