@@ -4,6 +4,7 @@
  * Detailed information can be found at https://developers.cloudflare.com/workers/
  */
 
+import { getRandom } from "./gle_sheets";
 import { getReply } from "./reply";
 import { Webhook } from "./webhook";
 
@@ -51,34 +52,17 @@ export class Bot {
             const text_lns = message.text.toLowerCase().replace(/\s+/g, "");
 
             if (message.text.includes('/start')) {
-                const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
-                const help_msg = getReply("help", this.user_lang);
-
-                await this.sendMessage(message.chat.id, welcome_msg, [
-                    { text: getReply("invoke_about_us", this.user_lang), callback_data: 'invoke_about_us' }]);
-                await this.sendMessage(message.chat.id, help_msg);
+                await this.sendWelcome(message);
+                await this.sendHelp(message);
 
             } else if (message.text.includes('/stop')) {
-                const stop_reply = getReply("stop", this.user_lang, message.from.first_name);
-                
-                const stop_msg = stop_reply[0];
-                const bye_replies = stop_reply[1];
-                const index = Math.floor(Math.random() * bye_replies.length);
-                const bye_reply = bye_replies[index];
-
-                await this.sendMessage(message.chat.id, stop_msg + bye_reply);
+                await this.sendStop(message);
 
             } else if (message.text.includes('/help')) {
-                const help_msg = getReply("help", this.user_lang);
-
-                await this.sendMessage(message.chat.id, help_msg);
+                await this.sendHelp(message);
 
             } else if (message.text.includes('/language')) {
-                const lang_msg = getReply("language", this.user_lang);
-
-                await this.sendMessage(message.chat.id, lang_msg, [
-                    { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
-                    { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
+                await this.sendLangToggle(message);
 
             } else if (message.text.includes('/about')) {
                 await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
@@ -131,8 +115,12 @@ export class Bot {
             await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
                 getReply("about_us_keyboard", this.user_lang));
 
+        } else if (data.includes('search')) {
+            const msg = data.replace("_", ": ")
+            await this.sendMessage(message.chat.id, msg);
+
         } else {
-            await this.replyRandom(callback_query.message.chat.id, "invalid");
+             await this.replyRandom(callback_query.message.chat.id, "invalid");
         }
     }
 
@@ -165,6 +153,44 @@ export class Bot {
         await kv_bot_prefs.put(`LANG_${userIdStr}`, value.toString());
 
         this.user_lang = value;
+    }
+
+    async sendWelcome(message) {
+        const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
+
+        await this.sendMessage(message.chat.id, welcome_msg, [
+            { text: getReply("invoke_about_us", this.user_lang), callback_data: 'invoke_about_us' }]);
+    }
+
+    async sendHelp(message) {
+        const help_msg = getReply("help", this.user_lang);
+        await getRandom("title", this.user_lang).then(async title => {
+            const data = `search\_${title}`;
+            const text = `${title}`;
+            await this.sendMessage(message.chat.id, help_msg, [
+                { text: text, callback_data: data}
+            ]);
+        });
+
+    }
+
+    async sendLangToggle(message) {
+        const lang_msg = getReply("language", this.user_lang);
+
+        await this.sendMessage(message.chat.id, lang_msg, [
+            { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
+            { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
+    }
+
+    async sendStop(message) {
+        const stop_reply = getReply("stop", this.user_lang, message.from.first_name);
+        
+        const stop_msg = stop_reply[0];
+        const bye_replies = stop_reply[1];
+        const index = Math.floor(Math.random() * bye_replies.length);
+        const bye_reply = bye_replies[index];
+
+        await this.sendMessage(message.chat.id, stop_msg + bye_reply);
     }
 
     async sendMessage(chatId, text, buttons = null) {
