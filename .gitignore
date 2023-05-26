@@ -2,6 +2,9 @@
 *-lock.*
 *.lock
 
+# Worker configuration files
+wrangler.toml
+
 # Logs
 logs
 *.log
