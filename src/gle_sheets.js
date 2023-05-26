@@ -13,6 +13,9 @@ export class Spreadsheet {
         this.api_key = `?key=${this.sheet_api_token}`;
     }
 
+    /*
+     * Launch a Spreadsheet.
+     */
     async launch() {
         // get the largest entry index
         await this.getEntriesLength();
@@ -21,11 +24,11 @@ export class Spreadsheet {
         const end_row = this.n_of_entries + 2;
 
         // define known ranges
-        this.id_range = `events!${start_row}:A${end_row}`;
-        this.keywords_range = `events!${start_row}:B${end_row}`;
-        this.title_range = `events!${start_row}:C${end_row}`;
-        this.date_range = `events!${start_row}:D${end_row}`;
-        this.description_range = `events!${start_row}:E${end_row}`;
+        this.id_range = `events!A${start_row}:A${end_row}`;
+        this.keywords_range = `events!B${start_row}:B${end_row}`;
+        this.title_range = `events!C${start_row}:C${end_row}`;
+        this.date_range = `events!D${start_row}:D${end_row}`;
+        this.description_range = `events!E${start_row}:E${end_row}`;
     }
 
     async getEntriesLength() {
@@ -60,7 +63,13 @@ export class Spreadsheet {
         return values;
     }
 
-    async getRandom(field, user_lang) {
-        return await this.getValues('index!A1:A1')
+    async getNamedValues(field, user_lang) {
+        switch (field) {
+            case 'title':
+                return await this.getValues(this.title_range)
+            default:
+                console.log("While getRandom from Spreadsheet, unknown field encountered: " + field);
+                return "404 Not Found";
+        }
     }
 }

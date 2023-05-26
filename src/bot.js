@@ -159,6 +159,16 @@ export class Bot {
         }
     }
 
+    getRandomInArray(arr) {
+        const index = Math.floor(Math.random() * arr.length);
+        const value = arr[index];
+        if (value === "") {
+            return ["400 Bad Request: value is empty", -1];
+        } else {
+            return [value, index];
+        }
+    }
+
     getRandomReply(replyType) {
         const replies = getReply(replyType, this.user_lang);
         const index = Math.floor(Math.random() * replies.length);
@@ -211,9 +221,11 @@ export class Bot {
 
     async sendHelp(message) {
         const help_msg = getReply("help", this.user_lang, message.from.first_name);
-        await this.spreadsheet.getRandom("title", this.user_lang)
-            .then(async title => {
-                const data = `search\_${title}`;
+        await this.spreadsheet.getNamedValues("title", this.user_lang)
+            .then(async values => {
+                const [title, index] = this.getRandomInArray(values);
+
+                const data = `search\_${index}`;
                 const searchWord = getReply("search_word", this.user_lang);
                 const text = `${searchWord}: ${title}`;
                 await this.sendMessage(message.chat.id, help_msg, [
