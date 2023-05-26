@@ -209,7 +209,7 @@ export class Bot {
     }
 
     async sendHelp(message) {
-        const help_msg = getReply("help", this.user_lang);
+        const help_msg = getReply("help", this.user_lang, message.from.first_name);
         await this.spreadsheet.getRandom("title", this.user_lang).then(async title => {
             const data = `search\_${title}`;
             const searchWord = getReply("search_word", this.user_lang);

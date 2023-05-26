@@ -28,7 +28,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "🤝 Я - твій вірний супутник у світі історії. Моє завдання - надавати тобі швидкі й точні відповіді на запити!\n\n" +
                 "💬 Щоб розпочати, відправляй назву події, рік або ім'я діяча та отримуй цікаві факти, інформацію і документи. " +
                 "Під цим повідомленням є кнопка з прикладом пошукового запиту. Клацай на неї, щоб побачити як все працює.\n\n" +
-                "Тисни в моєму меню:\n" +
+                "*Тисни в моєму меню:*\n" +
                 "/help - це повідомлення\n" +
                 "/language - змінюй мову\n" +
                 "/random - випадкова цікавинка\n" +
@@ -41,7 +41,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "🤝 I'm your faithful assistant in the world of history. My task is to provide you with quick and accurate answers to your queries!\n\n" +
                 "💬 To get started, send an event title, year or name of the historical figure and I'll get you flooded with interesting facts, information and documents. " +
                 "There's a button below this message with a search query example. Press on it to see how everything works.\n\n" +
-                "Press in my menu:\n" +
+                "*Press in my menu:*\n" +
                 "/help - resend this message\n" +
                 "/language - change the language\n" +
                 "/random - a random history fact\n" +
@@ -69,9 +69,9 @@ export function getReply(msgType, lang, first_name = "") {
 
         ["about_us", new Map([
             ["ua",
-                "🎩 Історик-Архіваріус - це твій цифровий друг з Історії або, можливо, краще буде сказати, твоя швидка шпаргалка з Історії України, що довзволяє " +
+                "🎩 *Історик-Архіваріус* - це твій цифровий друг з Історії або, можливо, краще буде сказати, твоя швидка шпаргалка з Історії України, що довзволяє " +
                 "будь-кому, хто цікавиться історією або готується до тестів й іспитів, на льоту знаходити інформацію про події, дати та людей за допомогою простого запиту.\n\n" +
-                "💡 Перевага такої системи - це, очевидно, швидкість, але вона також привчає твій мозок асоціювати об'ємну інформацію, яку необхідно запам'ятати, з короткими та точними ключовими словами-запитами. " +
+                "💡 *Перевага такої системи* - це, очевидно, швидкість, але вона також привчає твій мозок асоціювати об'ємну інформацію, яку необхідно запам'ятати, з короткими та точними ключовими словами-запитами. " +
                 "У результаті цього, у твоїй пам'яті формується чіткий зв'язок між невеликими шматочками тексту та більшими, що надзвичайно допомагає під час іспитів чи тестів, " +
                 "де ти у виграші, якщо здатен належним чином зіставляти окремі частини речень в питанні, щоб знаходити правильні відповіді та заощаджувати безліч часу для зосередження " +
                 "на складніших завданнях.\n\n" +
@@ -82,12 +82,12 @@ export function getReply(msgType, lang, first_name = "") {
                 "прагнучи створити щось корисне.\n\n" +
                 "👇 Клікай на ці прекрасні покликання нижче. Одне приведе тебе на сторінку веб-сайту школи, а друга - до сторінки коду проєкта на GitHub, " +
                 "де ти зможеш поглянути ближче на те, як працює бот. Якщо тобі сподобався бот і в тебе з'явилося бажання підтримати його подальшу розробку, пиши сюди: @heiskempler.\n\n" +
-                "🙏 Дякую тобі за увагу!\n", 
+                "🙏 *Дякую тобі за увагу!*\n", 
             ],
             ["en",
-                "🎩 Historic-Archivarius is your digital history friend or, maybe it'll be better to say, your fast cheat sheet for the History of Ukraine that allows " +
+                "🎩 *Historic-Archivarius* is your digital history friend or, maybe it'll be better to say, your fast cheat sheet for the History of Ukraine that allows " +
                 "anyone curious or who are preparing for exams to rapidly search information about events, dates, and people based on a simple query.\n\n" +
-                "💡 The benefit of such system is, obviously, speed but also it triggers your brain to associate long information that has to be memorised with short and precise keywords or queries. " +
+                "💡 *The benefit of such system is*, obviously, speed but also it triggers your brain to associate long information that has to be memorised with short and precise keywords or queries. " +
                 "As a result, there's a linkage formed in your memory and the ability to connect small chunks of text with larger ones which tremendously helps in exams or tests " +
                 "where you're at advantage if you can relate words or pieces of text in the question properly to give correct answers faster which will save you a ton of time to be able to focus " +
                 "more when you encounter something harder than usual.\n\n" +
@@ -97,7 +97,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "What also had a profound impact on the success is the team itself. A mixture of a programmer, writer, artist, speaker, teacher, and history lovers altogether endeavored to create.\n\n" +
                 "👇 Make sure you check out these beautiful links below. One will get you to our school website, another - to project code on GitHub, " +
                 "which you can explore to get a closer look on how the bot works internally. If you like our bot and thought about supporting its further development, dm @heiskempler.\n\n" +
-                "🙏 Thank you!\n", 
+                "🙏 *Thank you!*\n", 
             ],
         ])],
 
