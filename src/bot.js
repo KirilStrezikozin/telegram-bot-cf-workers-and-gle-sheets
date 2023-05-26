@@ -163,6 +163,10 @@ export class Bot {
 
                 await this.spreadsheet.getEntry(entry_index)
                     .then(async values => {
+                        // searching word to imitate search progress
+                        const searching_word = this.getRandomReply("searching_process");
+                        await this.sendMessage(message.chat.id, searching_word);
+
                         const entry = values[0];
                         console.log(entry);
 
@@ -362,7 +366,7 @@ export class Bot {
         } else if (keyboard) {
             await this.callApi('sendMessage', { chat_id: chatId, text: text,
                 parse_mode: 'Markdown', disable_notification: disable_notification,
-                reply_markup: JSON.stringify({keyboard: keyboard, one_time_keyboard: true })});
+                reply_markup: JSON.stringify( {keyboard: keyboard, one_time_keyboard: true }) });
 
         } else {
             await this.callApi('sendMessage', { chat_id: chatId, text: text,
