@@ -4,9 +4,9 @@
  * Detailed information can be found at https://developers.cloudflare.com/workers/
  */
 
-import { getRandom } from "./gle_sheets";
 import { getReply } from "./reply";
 import { Webhook } from "./webhook";
+import { Spreadsheet } from "./gle_sheets";
 
 
 export class Bot {
@@ -15,6 +15,7 @@ export class Bot {
         this.bot_api_secret = bot_api_secret;
         this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
         this.webhook = new Webhook(worker_url, bot_api_token, bot_api_secret);
+        this.spreadsheet = new Spreadsheet();
         this.user_lang = "ua";
         this.sendMessageDelay = 400;
         this.is_alive = true;
