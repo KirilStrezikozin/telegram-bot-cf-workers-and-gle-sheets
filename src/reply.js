@@ -126,6 +126,11 @@ export function getReply(msgType, lang, first_name = "") {
             ["en", "🔎 Searching for...\n"],
         ])],
 
+        ["entry_description_emoji", new Map([
+            ["ua", new Array("📗", "📕", "📙", "📃", "📘", "📒", "📓", "📜")],
+            ["en", new Array("📗", "📕", "📙", "📃", "📘", "📒", "📓", "📜")],
+        ])],
+
         ["lifehack", new Map([
             ["ua", new Array(
                 `👋 Привіт, ${first_name}!\n\n` +

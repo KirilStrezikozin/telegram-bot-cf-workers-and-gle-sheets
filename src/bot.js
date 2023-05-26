@@ -120,6 +120,7 @@ export class Bot {
                 await this.sendMessage(message.chat.id, bye_replies[index]);
 
             } else {
+                // TODO: invoke search for _message.text_
                 await this.replyRandom(message.chat.id, "invalid");
             }
         
@@ -157,11 +158,36 @@ export class Bot {
             await this.sendMessage(message.chat.id, lifehack_msg, null, lifehack_keyboard);
 
         } else if (data.includes('search')) {
-            const msg = data.replace("_", ": ")
-            await this.sendMessage(message.chat.id, msg);
+            try {
+                const entry_index = parseInt(data.replace("search_", ""));
+
+                await this.spreadsheet.getEntry(entry_index)
+                    .then(async values => {
+                        const entry = values[0];
+                        console.log(entry);
+
+                        const title = (entry[2].trim().charAt(0).toUpperCase() + entry[2].substring(1)).replaceAll("\n", " ").trim();
+                        const date = entry[3].toLowerCase().replaceAll("\n", " ").trim();
+                        const description = (entry[4].charAt(0).toUpperCase() + entry[4].substring(1)).replaceAll("\n", " ").trim();
+
+                        const description_emoji = this.getRandomReply("entry_description_emoji");
+
+                        console.log(title);
+                        console.log(date);
+                        console.log(description);
+
+                        const entry_msg = `📌 *${title}*\n\n📅 _${date}_\n\n${description_emoji} ${description}`;
+                        await this.sendMessage(message.chat.id, entry_msg);
+                    });
+            }
+
+            catch (error) {
+                console.log(error);
+                await this.replyRandom(message.chat.id, "invalid");
+            }
 
         } else {
-             await this.replyRandom(callback_query.message.chat.id, "invalid");
+             await this.replyRandom(message.chat.id, "invalid");
         }
     }
 
@@ -351,6 +377,7 @@ export class Bot {
         await this.spreadsheet.getNamedValues("title", this.user_lang)
             .then(async values => {
                 const [title, index] = this.getRandomInArray(values, 0);
+                // TODO: invoke search for _title_
 
                 const searchWord = getReply("searching_word", this.user_lang);
 

@@ -72,4 +72,15 @@ export class Spreadsheet {
                 return "404 Not Found";
         }
     }
+
+    /* 
+     * Return entry (array) of given index from the spreadsheet.
+     */
+    async getEntry(index) {
+        // because first entry is in A2:E2 range;
+        const row = index + 2;
+        const range = `events!A${row}:E${row}`;
+
+        return await this.getValues(range);
+    }
 }
