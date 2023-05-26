@@ -26,7 +26,7 @@ export function getReply(msgType, lang, first_name = "") {
             ["ua",
                 `👋 *Привіт, ${first_name}*!\n\n` +
                 "🤝 Я - твій вірний супутник у світі історії. Моє завдання - надавати тобі швидкі й точні відповіді на запити!\n\n" +
-                "💬 Щоб розпочати, відправляй назву події, рік або ім'я діяча та отримуй цікаві факти, інформацію і документи. " +
+                "💬 Щоб розпочати, *відправляй назву події, рік або ім'я діяча та отримуй цікаві факти, інформацію і документи*. " +
                 "Під цим повідомленням є кнопка з прикладом пошукового запиту. Клацай на неї, щоб побачити як все працює.\n\n" +
                 "*Тисни в моєму меню:*\n" +
                 "/help - це повідомлення\n" +
@@ -39,7 +39,7 @@ export function getReply(msgType, lang, first_name = "") {
             ["en",
                 `👋 *Hi, ${first_name}*!\n\n` +
                 "🤝 I'm your faithful assistant in the world of history. My task is to provide you with quick and accurate answers to your queries!\n\n" +
-                "💬 To get started, send an event title, year or name of the historical figure and I'll get you flooded with interesting facts, information and documents. " +
+                "💬 To get started, *send an event title, year or name of the historical figure and I'll get you flooded with interesting facts, information and documents*. " +
                 "There's a button below this message with a search query example. Press on it to see how everything works.\n\n" +
                 "*Press in my menu:*\n" +
                 "/help - resend this message\n" +
