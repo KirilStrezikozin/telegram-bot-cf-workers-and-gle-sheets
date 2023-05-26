@@ -165,6 +165,7 @@ export class Bot {
                     .then(async values => {
                         // searching word to imitate search progress
                         const searching_word = this.getRandomReply("searching_process");
+                        await this.sendMessage(message.chat.id, "🔎");
                         await this.sendMessage(message.chat.id, searching_word);
 
                         const entry = values[0];
