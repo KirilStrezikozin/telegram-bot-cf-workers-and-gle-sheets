@@ -1,3 +1,6 @@
+# worker configuration file
+*.toml
+
 .DS_Store
 *-lock.*
 *.lock
