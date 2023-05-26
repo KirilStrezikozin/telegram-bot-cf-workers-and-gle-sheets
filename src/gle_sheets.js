@@ -5,12 +5,11 @@
  */
 
 
-export async function getRandom(field) {
-    return "400 Not accessed";
-}
-
-
 export class Spreadsheet {
     constructor() {
+    }
+
+    async getRandom(field) {
+        return "400 Not accessed";
     }
 }

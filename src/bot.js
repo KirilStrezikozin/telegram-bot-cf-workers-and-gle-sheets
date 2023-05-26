@@ -141,6 +141,14 @@ export class Bot {
             await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
                 getReply("about_us_keyboard", this.user_lang));
 
+        } else if (data === 'invoke_lifehacks') {
+            const lifehack_msg = this.getRandomReply("invoke_lifehack_again");
+
+            const lifehack_replies = getReply("lifehack", this.user_lang, message.from.first_name);
+            const lifehack_keyboard = lifehack_replies[1];
+
+            await this.sendMessage(message.chat.id, lifehack_msg, null, lifehack_keyboard);
+
         } else if (data.includes('search')) {
             const msg = data.replace("_", ": ")
             await this.sendMessage(message.chat.id, msg);
@@ -150,11 +158,16 @@ export class Bot {
         }
     }
 
-    async replyRandom(chatId, replyType) {
+    getRandomReply(replyType) {
         const replies = getReply(replyType, this.user_lang);
         const index = Math.floor(Math.random() * replies.length);
+        return replies[index];
+    }
 
-        await this.sendMessage(chatId, replies[index]);
+    async replyRandom(chatId, replyType) {
+        const reply = this.getRandomReply(replyType);
+
+        await this.sendMessage(chatId, reply);
     }
 
     async getUserLang(userId) {
@@ -197,7 +210,7 @@ export class Bot {
 
     async sendHelp(message) {
         const help_msg = getReply("help", this.user_lang);
-        await getRandom("title", this.user_lang).then(async title => {
+        await this.spreadsheet.getRandom("title", this.user_lang).then(async title => {
             const data = `search\_${title}`;
             const searchWord = getReply("search_word", this.user_lang);
             const text = `${searchWord}: ${title}`;
@@ -239,11 +252,16 @@ export class Bot {
 
     async replyLifehack(message, type) {
         const lifehacks = getReply("lifehack", this.user_lang, message.from.first_name);
-
         const lifehack_replies = lifehacks[2].get(`lifehack_${type}`);
-        for (const reply of lifehack_replies) {
-            await this.sendMessage(message.chat.id, reply);
+
+        for (let i = 0; i < lifehack_replies.length - 1; i++) {
+            await this.sendMessage(message.chat.id, lifehack_replies[i]);
         }
+
+        // send last life hack with a button to query reply keyboard again
+        await this.sendMessage(message.chat.id, lifehack_replies[lifehack_replies.length - 1], [
+            { text: getReply("lifehack_again", this.user_lang), callback_data: "invoke_lifehacks"}
+        ]);
     }
 
     async sendMessage(chatId, text, buttons = null, keyboard = null, disable_notification = false) {
