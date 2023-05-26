@@ -14,10 +14,15 @@ export class Bot {
         this.bot_api_token = bot_api_token;
         this.bot_api_secret = bot_api_secret;
         this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
+
         this.webhook = new Webhook(worker_url, bot_api_token, bot_api_secret);
         this.spreadsheet = new Spreadsheet();
+
         this.user_lang = "ua";
         this.sendMessageDelay = 400;
+        this.helpEventLength = 25;
+        this.helpEventSearchTrials = 20;
+
         this.is_alive = true;
     }
 
@@ -160,14 +165,38 @@ export class Bot {
         }
     }
 
-    getRandomInArray(arr) {
-        const index = Math.floor(Math.random() * arr.length);
-        const value = arr[index];
-        if (value === "") {
-            return ["400 Bad Request: value is empty", -1];
-        } else {
-            return [value, index];
+    /*
+     * Get random element in array.
+     * If subindex is not -1, value = arr[index][subindex]
+     */
+    getRandomInArray(arr, sub = -1) {
+        let value = "";
+        let index = -1;
+        let trial = 0;
+        let cache = new Map([]);
+
+        while (index === -1) {
+            index = Math.floor(Math.random() * arr.length);
+            if (sub === -1) value = arr[index];
+            else value = arr[index][sub];
+
+            if (cache.get(index)) {
+                continue
+            } else if (value === "") {
+                value = "400 Bad Request: value is empty";
+            }
+
+            if (trial >= this.helpEventSearchTrials) {
+                break;
+            } else if (value.length > 20) {
+                cache[index] = true;
+                index = -1;
+                // console.log(`${trial} trial went with ${value}`);
+                trial++;
+            } else break;
         }
+
+        return [value, index];
     }
 
     getRandomReply(replyType) {
@@ -224,7 +253,7 @@ export class Bot {
         const help_msg = getReply("help", this.user_lang, message.from.first_name);
         await this.spreadsheet.getNamedValues("title", this.user_lang)
             .then(async values => {
-                const [title, index] = this.getRandomInArray(values);
+                const [title, index] = this.getRandomInArray(values, 0);
 
                 const data = `search\_${index}`;
                 const searchWord = getReply("search_word", this.user_lang);
@@ -233,7 +262,6 @@ export class Bot {
                     { text: text, callback_data: data}
                 ]);
             });
-
     }
 
     async sendLangToggle(message) {
