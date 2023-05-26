@@ -28,6 +28,7 @@ export class Bot {
         try {
             // Handle incoming message from the user
             if ('message' in content) {
+                console.log("Replying to: " + content.message.text);
                 await this.getUserLang(content.message.from.id);
                 await this.handleMessage(content.message);
             }
