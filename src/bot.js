@@ -171,6 +171,24 @@ export class Bot {
      */
     getRandomInArray(arr, sub = -1) {
         let value = "";
+        const index = Math.floor(Math.random() * arr.length);
+
+        if (sub === -1) value = arr[index];
+        else value = arr[index][sub];
+
+        if (value === "") {
+            value = "400 Bad Request: value is empty";
+        }
+
+        return [value, index];
+    }
+
+    /*
+     * Get random element in array the length of which is less than this.helpEventLength.
+     * If subindex is not -1, value = arr[index][subindex]
+     */
+    getRandomHelpEvent(arr, sub = -1) {
+        let value = "";
         let index = -1;
         let trial = 0;
         let cache = new Map([]);
@@ -253,7 +271,7 @@ export class Bot {
         const help_msg = getReply("help", this.user_lang, message.from.first_name);
         await this.spreadsheet.getNamedValues("title", this.user_lang)
             .then(async values => {
-                const [title, index] = this.getRandomInArray(values, 0);
+                const [title, index] = this.getRandomHelpEvent(values, 0);
 
                 const data = `search\_${index}`;
                 const searchWord = getReply("search_word", this.user_lang);
@@ -327,7 +345,18 @@ export class Bot {
     }
 
     async sendDice(chatId) {
+        await this.sendDelay(this.sendMessageDelay, chatId, 'choose_sticker');
         await this.callApi('sendDice', { chat_id: chatId, emoji: '🎰' });
+
+        await this.spreadsheet.getNamedValues("title", this.user_lang)
+            .then(async values => {
+                const [title, index] = this.getRandomInArray(values, 0);
+
+                const searchWord = getReply("searching_word", this.user_lang);
+
+                const text = `${searchWord}${title}`;
+                await this.sendMessage(chatId, text);
+            });
     }
 
     async answerCallbackQuery(callbackQueryId, text) {
