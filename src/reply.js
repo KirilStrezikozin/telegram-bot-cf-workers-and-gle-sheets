@@ -24,7 +24,7 @@ export function getReply(msgType, lang, first_name = "") {
 
         ["help", new Map([
             ["ua",
-                "👋 *Привіт*,\n\n" +
+                `👋 *Привіт, ${first_name}*!\n\n` +
                 "🤝 Я - твій вірний супутник у світі історії. Моє завдання - надавати тобі швидкі й точні відповіді на запити!\n\n" +
                 "💬 Щоб розпочати, відправляй назву події, рік або ім'я діяча та отримуй цікаві факти, інформацію і документи. " +
                 "Під цим повідомленням є кнопка з прикладом пошукового запиту. Клацай на неї, щоб побачити як все працює.\n\n" +
@@ -37,7 +37,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "✨ *Хай щастить!*\n"
             ],
             ["en",
-                "👋 *Hi*,\n\n" +
+                `👋 *Hi, ${first_name}*!\n\n` +
                 "🤝 I'm your faithful assistant in the world of history. My task is to provide you with quick and accurate answers to your queries!\n\n" +
                 "💬 To get started, send an event title, year or name of the historical figure and I'll get you flooded with interesting facts, information and documents. " +
                 "There's a button below this message with a search query example. Press on it to see how everything works.\n\n" +
@@ -46,7 +46,7 @@ export function getReply(msgType, lang, first_name = "") {
                 "/language - change the language\n" +
                 "/random - a random history fact\n" +
                 "/about - about the bot\n" +
-                "/lifehack - history lifehacks\n\n" +
+                "/lifehack - history life hacks\n\n" +
                 "✨ Good luck!\n"
             ],
         ])],
