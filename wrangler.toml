@@ -1,5 +1,5 @@
 name = "telegram-bot-cf-workers-and-gle-sheets"
-account_id = "84119fa5a63fd38532b9ea62903d187f"
+account_id = ""
 workers_dev = true
 main = "src/worker.js"
 compatibility_date = "2023-05-20"
