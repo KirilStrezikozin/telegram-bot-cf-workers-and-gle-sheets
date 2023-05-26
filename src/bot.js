@@ -23,6 +23,7 @@ export class Bot {
 
     async update(request) {
         const content = await request.json();
+        await this.spreadsheet.launch();
 
         try {
             // Handle incoming message from the user
@@ -210,14 +211,15 @@ export class Bot {
 
     async sendHelp(message) {
         const help_msg = getReply("help", this.user_lang, message.from.first_name);
-        await this.spreadsheet.getRandom("title", this.user_lang).then(async title => {
-            const data = `search\_${title}`;
-            const searchWord = getReply("search_word", this.user_lang);
-            const text = `${searchWord}: ${title}`;
-            await this.sendMessage(message.chat.id, help_msg, [
-                { text: text, callback_data: data}
-            ]);
-        });
+        await this.spreadsheet.getRandom("title", this.user_lang)
+            .then(async title => {
+                const data = `search\_${title}`;
+                const searchWord = getReply("search_word", this.user_lang);
+                const text = `${searchWord}: ${title}`;
+                await this.sendMessage(message.chat.id, help_msg, [
+                    { text: text, callback_data: data}
+                ]);
+            });
 
     }
 
