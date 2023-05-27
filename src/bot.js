@@ -166,7 +166,7 @@ export class Bot {
 
             try {
                 const entry_index = parseInt(data.replace("search_", ""));
-                await this.composeAndSendEntry(message.chat.id, entry_index);
+                await this.composeAndSendEntry(message.chat.id, entry_index, true, 800);
             }
 
             catch (error) {
@@ -370,16 +370,17 @@ export class Bot {
         await this.spreadsheet.getNamedValues("title", this.user_lang)
             .then(async values => {
                 const [title, index] = this.getRandomInArray(values, 0);
-                // TODO: invoke search for _title_
 
                 const searchWord = getReply("searching_word", this.user_lang);
 
                 const text = `${searchWord}${title}`;
                 await this.sendMessage(chatId, text);
+
+                await this.composeAndSendEntry(chatId, index, true, 1500);
             });
     }
 
-    async sendEntry(chatId, values) {
+    async sendEntry(chatId, values, delete_last, delete_delay) {
         const entry = values[0];
         console.log(entry);
 
@@ -397,7 +398,7 @@ export class Bot {
         // console.log(entry_msg);
 
         // wait and delete searching word
-        await this.deleteMessage(chatId, this.lastSentMessageId, 800);
+        if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, delete_delay);
 
         const oldDelay = this.sendMessageDelay;
         this.sendMessageDelay = 0; // fixed delay
@@ -407,11 +408,11 @@ export class Bot {
         this.sendMessageDelay = oldDelay;
     }
 
-    async composeAndSendEntry(chatId, entry_index = null) {
+    async composeAndSendEntry(chatId, entry_index = null, delete_last, delete_delay = 0) {
         if (entry_index !== null) {
             await this.spreadsheet.getEntry(entry_index)
                 .then(async values => {
-                    await this.sendEntry(chatId, values);
+                    await this.sendEntry(chatId, values, delete_last, delete_delay);
                 });
         }
     }
