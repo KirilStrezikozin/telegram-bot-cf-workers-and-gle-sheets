@@ -407,9 +407,9 @@ export class Bot {
         const entry = values[0];
         console.log(entry);
 
-        const title = (entry[2].trim().charAt(0).toUpperCase() + entry[2].substring(1)).replaceAll("\n", " ").trim();
-        const date = entry[3].toLowerCase().replaceAll("\n", " ").trim();
-        const description = (entry[4].charAt(0).toUpperCase() + entry[4].substring(1)).replaceAll("\n", " ").trim();
+        const title = (entry[2].trim().charAt(0).toUpperCase() + entry[2].substring(1)).replaceAll("\n", " ").trim().replace(/\s+/g, " ");
+        const date = entry[3].toLowerCase().replaceAll("\n", " ").trim().replace(/\s+/g, " ");
+        const description = (entry[4].charAt(0).toUpperCase() + entry[4].substring(1)).replaceAll("\n", " ").trim().replace(/\s+/g, " ");
 
         return [title, date, description];
     }
@@ -472,7 +472,7 @@ export class Bot {
                 const values = await this.spreadsheet.getEntry(id);
                 const [title, date, ..._] = this.getEntryContent(values);
 
-                titles += `📌 *${i + 1}.* ${title}. _${date}_.\n\n`;
+                titles += `📌 *${i + 1}.* ${title}.\n📅 _${date}_.\n\n`;
                 buttons[i] = { text: i + 1, callback_data: `search_nosearchimitate_${id}` };
             }
 
