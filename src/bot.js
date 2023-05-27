@@ -474,7 +474,9 @@ export class Bot {
                 const values = await this.spreadsheet.getEntry(id);
                 const [title, date, ..._] = this.getEntryContent(values);
 
-                titles += `👇 *${i + 1}.* ${title}.\n - _${date}_.\n\n`;
+                let date_end_dot = ".";
+                if (date[date.length - 1] === ".") date_end_dot = "";
+                titles += `👇 *${i + 1}.* ${title}.\n - _${date}_${date_end_dot}\n\n`;
                 buttons[0][i] = { text: `${i + 1}`, callback_data: `search_nosearchimitate_${id}` };
             }
 
