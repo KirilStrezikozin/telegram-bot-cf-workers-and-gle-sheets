@@ -168,16 +168,28 @@ export class Bot {
             await this.replyRandom(message.chat.id, "invalid");
 
         } else if (data.includes('search_')) {
-            // searching word to imitate search progress
-            const searching_word = this.getRandomReply("searching_process");
-            await this.sendMessage(message.chat.id, "🔎");
-            await this.sendMessage(message.chat.id, searching_word);
+            let sendDelay = 0;
+
+            if (!data.includes('_nosearchimitate_')) {
+                // searching word to imitate search progress
+                const searching_word = this.getRandomReply("searching_process");
+                await this.sendMessage(message.chat.id, "🔎");
+                await this.sendMessage(message.chat.id, searching_word);
+
+                sendDelay = 800;
+            }
 
             try {
-                console.log("Callback data is", data);
-                const entry_index = parseInt(data.replace("search_", ""));
-                console.log("Parsed index is", entry_index);
-                await this.composeAndSendEntry(message.chat.id, entry_index, true, 800);
+                let entry_data = data.replace("search_", "").replace("nosearchimitate_", "").split("_");
+                const entry_index = parseInt(entry_data[0]);
+
+                const delMsgIndex = parseInt(entry_data[1]);
+
+                if (delMsgIndex || null !== null) {
+                    await this.deleteMessage(message.chat.id, delMsgIndex, 0);
+                }
+
+                await this.composeAndSendEntry(message.chat.id, entry_index, true, sendDelay);
             }
 
             catch (error) {
@@ -465,7 +477,7 @@ export class Bot {
                 await this.spreadsheet.getEntry(id).then(values => {
                     const [title, date, ..._] = this.getEntryContent(values);
                     titles += `📌 *${i + 1}.* ${title}. _${date}_.\n\n`;
-                    buttons[i] = { text: i + 1, callback_data: `search_${id}` };
+                    buttons[i] = { text: i + 1, callback_data: `search_nosearchimitate_${id}` };
                 });
             }
 
