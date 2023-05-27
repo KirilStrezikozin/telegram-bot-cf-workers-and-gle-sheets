@@ -163,14 +163,20 @@ export class Bot {
 
             await this.sendMessage(message.chat.id, lifehack_msg, null, lifehack_keyboard);
 
-        } else if (data.includes('search')) {
+        } else if (data.includes('search_multiple_')) {
+            console.log("Callback data is", data);
+            await this.replyRandom(message.chat.id, "invalid");
+
+        } else if (data.includes('search_')) {
             // searching word to imitate search progress
             const searching_word = this.getRandomReply("searching_process");
             await this.sendMessage(message.chat.id, "🔎");
             await this.sendMessage(message.chat.id, searching_word);
 
             try {
+                console.log("Callback data is", data);
                 const entry_index = parseInt(data.replace("search_", ""));
+                console.log("Parsed index is", entry_index);
                 await this.composeAndSendEntry(message.chat.id, entry_index, true, 800);
             }
 
@@ -180,6 +186,7 @@ export class Bot {
             }
 
         } else {
+            console.log("Callback data is", data);
              await this.replyRandom(message.chat.id, "invalid");
         }
     }
@@ -429,48 +436,53 @@ export class Bot {
     async searchAndSendEntry(chatId, text_query, delete_last, delete_delay = 0) {
         if (text_query === "") {
             await this.replyRandom(chatId, "invalid");
+            return;
+        }
+
+        const ids = await this.spreadsheet.searchEntries(text_query, this.user_lang);
+        console.log("Received ids:", ids);
+
+        if (!ids.length) {
+            if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, delete_delay);
+
+            const not_found_msg = this.getRandomReply("search_not_found");
+            await this.sendMessage(chatId, not_found_msg);
+
+        } else if (ids.length === 1) {
+            if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, delete_delay);
+
+            await this.composeAndSendEntry(chatId, ids[0], false);
+
+        } else if (ids.length <= 3) {
+            const search_choose_exact_text = getReply("search_choose_exact", this.user_lang);
+            const description_emoji = this.getRandomReply("entry_description_emoji");
+
+            let buttons = new Array(ids.length + 1);
+            let titles = "";
+            for (let i = 0; i < ids.length; i++) {
+                const id = ids[i];
+
+                await this.spreadsheet.getEntry(id).then(values => {
+                    const [title, date, ..._] = this.getEntryContent(values);
+                    titles += `📌 *${i + 1}.* ${title}. _${date}_.\n\n`;
+                    buttons[i] = { text: i + 1, callback_data: `search_${id}` };
+                });
+            }
+
+            buttons[ids.length] = { text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}` };
+
+            if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, 0);
+
+            const oldDelay = this.sendMessageDelay;
+            this.sendMessageDelay = 0;
+
+            const search_choose_exact_msg = `${description_emoji} ${search_choose_exact_text}${titles}`;
+            await this.sendMessage(chatId, search_choose_exact_msg, buttons);
+
+            this.sendMessageDelay = oldDelay;
 
         } else {
-            const ids = await this.spreadsheet.searchEntries(text_query, this.user_lang);
-            console.log("Received ids:", ids);
-
-            if (!ids.length) {
-                if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, delete_delay);
-
-                const not_found_msg = this.getRandomReply("search_not_found");
-                await this.sendMessage(chatId, not_found_msg);
-
-            } else {
-                if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, delete_delay);
-
-                if (ids.length === 1) {
-                    await this.composeAndSendEntry(chatId, ids[0], false);
-
-                } else if (ids.length <= 3) {
-                    const search_choose_exact_text = getReply("search_choose_exact", this.user_lang);
-                    const description_emoji = this.getRandomReply("entry_description_emoji");
-
-                    let buttons = new Array(ids.length + 1);
-                    let titles = "";
-                    for (let i = 0; i < ids.length; i++) {
-                        const id = ids[i];
-
-                        await this.spreadsheet.getEntry(id).then(values => {
-                            const [title, ..._] = this.getEntryContent(values);
-                            titles += `📌 *${i + 1}.* ${title}\n\n`;
-                            buttons[i] = { text: i + 1, callback_data: `searches_${id}` };
-                        });
-                    }
-
-                    buttons[ids.length] = { text: getReply("all_word", this.user_lang), callback_data: `searches_${[...ids]}` };
-
-                    const search_choose_exact_msg = `${description_emoji} ${search_choose_exact_text}${titles}`;
-                    await this.sendMessage(chatId, search_choose_exact_msg, buttons);
-
-                } else {
-                    await this.sendMessage(chatId, ids);
-                }
-            }
+            await this.sendMessage(chatId, ids);
         }
     }
 
