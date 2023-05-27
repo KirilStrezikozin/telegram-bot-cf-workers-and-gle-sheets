@@ -24,6 +24,7 @@ export class Bot {
         this.helpEventSearchTrials = 20;
 
         this.is_alive = true;
+        this.lastSentMessageId = null;
     }
 
     async update(request) {
@@ -158,16 +159,16 @@ export class Bot {
             await this.sendMessage(message.chat.id, lifehack_msg, null, lifehack_keyboard);
 
         } else if (data.includes('search')) {
+            // searching word to imitate search progress
+            const searching_word = this.getRandomReply("searching_process");
+            await this.sendMessage(message.chat.id, "🔎");
+            await this.sendMessage(message.chat.id, searching_word);
+
             try {
                 const entry_index = parseInt(data.replace("search_", ""));
 
                 await this.spreadsheet.getEntry(entry_index)
                     .then(async values => {
-                        // searching word to imitate search progress
-                        const searching_word = this.getRandomReply("searching_process");
-                        await this.sendMessage(message.chat.id, "🔎");
-                        await this.sendMessage(message.chat.id, searching_word);
-
                         const entry = values[0];
                         console.log(entry);
 
@@ -181,8 +182,17 @@ export class Bot {
                         console.log(date);
                         console.log(description);
 
+                        // wait and delete searching word
+                        await this.deleteMessage(message.chat.id, this.lastSentMessageId, 800);
+
                         const entry_msg = `📌 *${title}*\n\n📅 _${date}_\n\n${description_emoji} ${description}`;
+
+                        const oldDelay = this.sendMessageDelay;
+                        this.sendMessageDelay = 0; // fixed delay
+
                         await this.sendMessage(message.chat.id, entry_msg);
+
+                        this.sendMessageDelay = oldDelay;
                     });
             }
 
@@ -375,6 +385,11 @@ export class Bot {
         }
     }
 
+    async deleteMessage(chatId, messageId, delay = 0) {
+        await this.sendDelay(delay);
+        await this.callApi('deleteMessage', { chat_id: chatId, message_id: messageId });
+    }
+
     async sendDice(chatId) {
         await this.sendDelay(this.sendMessageDelay, chatId, 'choose_sticker');
         await this.callApi('sendDice', { chat_id: chatId, emoji: '🎰' });
@@ -418,6 +433,9 @@ export class Bot {
         const response = await fetch(apiUrl);
         const result = await response.json();
         console.log(result);
+
+        // capture last sent message id
+        if (methodName === 'sendMessage') this.lastSentMessageId = result.result.message_id;
     }
 
     error(message, status) {
