@@ -83,7 +83,7 @@ export class Bot {
 
             } else if (message.text.includes('/about')) {
                 await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
-                    getReply("about_us_keyboard", this.user_lang));
+                    [getReply("about_us_keyboard", this.user_lang)]);
 
             } else if (message.text.includes('/lifehack')) {
                 await this.sendLifehack(message);
@@ -127,7 +127,6 @@ export class Bot {
                 await this.sendMessage(message.chat.id, searching_word);
 
                 await this.searchAndSendEntry(message.chat.id, message.text, true, this.sendMessageDelay);
-
             }
         
         // Reply to other types of messages
@@ -164,8 +163,17 @@ export class Bot {
             await this.sendMessage(message.chat.id, lifehack_msg, null, lifehack_keyboard);
 
         } else if (data.includes('search_multiple_')) {
-            console.log("Callback data is", data);
-            await this.replyRandom(message.chat.id, "invalid");
+            const entry_data = data.replace("search_multiple_", "").split(",");
+            console.log("Callback data is", entry_data);
+
+            await this.deleteMessage(message.chat.id, message.message_id);
+
+            for (let text_id of entry_data) {
+                const id = parseInt(text_id) || null;
+                if (id === null) continue;
+
+                await this.composeAndSendEntry(message.chat.id, id, false);
+            }
 
         } else if (data.includes('search_')) {
             let sendDelay = 0;
@@ -360,7 +368,7 @@ export class Bot {
 
         // send last life hack with a button to query reply keyboard again
         await this.sendMessage(message.chat.id, lifehack_replies[lifehack_replies.length - 1], [
-            { text: getReply("lifehack_again", this.user_lang), callback_data: "invoke_lifehacks"}
+            [{ text: getReply("lifehack_again", this.user_lang), callback_data: "invoke_lifehacks"}]
         ]);
     }
 
@@ -493,7 +501,29 @@ export class Bot {
             this.sendMessageDelay = oldDelay;
 
         } else {
-            await this.sendMessage(chatId, ids);
+            // todo: text
+            const search_choose_exact_text = getReply("search_choose_exact", this.user_lang);
+            const description_emoji = this.getRandomReply("entry_description_emoji");
+            //
+            // todo: buttons
+            const buttons = [
+                [
+                    { text: getReply("search_top1", this.user_lang), callback_data: `search_multiple_${[]}`},
+                    { text: getReply("search_top3", this.user_lang), callback_data: `search_multiple_${[]}`},
+                ],
+                [{ text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}`}]
+            ];
+
+            if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, 0);
+
+            const oldDelay = this.sendMessageDelay;
+            this.sendMessageDelay = 0;
+
+            // todo: msg
+            const search_choose_exact_msg = `${description_emoji} ${search_choose_exact_text}${titles}`;
+            await this.sendMessage(chatId, search_choose_exact_msg, buttons);
+
+            this.sendMessageDelay = oldDelay;
         }
     }
 
