@@ -307,17 +307,16 @@ export class Bot {
 
     async sendHelp(message) {
         const help_msg = getReply("help", this.user_lang, message.from.first_name);
-        await this.spreadsheet.getNamedValues("title", this.user_lang)
-            .then(async values => {
-                const [title, index] = this.getRandomHelpEvent(values, 0);
+        const values = await this.spreadsheet.getNamedValues("title", this.user_lang);
 
-                const data = `search\_${index}`;
-                const searchWord = getReply("search_word", this.user_lang);
-                const text = `${searchWord}: ${title}`;
-                await this.sendMessage(message.chat.id, help_msg, [
-                    { text: text, callback_data: data}
-                ]);
-            });
+        const [title, index] = this.getRandomHelpEvent(values, 0);
+
+        const data = `search\_${index}`;
+        const searchWord = getReply("search_word", this.user_lang);
+        const text = `${searchWord}: ${title}`;
+        await this.sendMessage(message.chat.id, help_msg, [
+            { text: text, callback_data: data}
+        ]);
     }
 
     async sendLangToggle(message) {
@@ -391,18 +390,17 @@ export class Bot {
         await this.sendDelay(this.sendMessageDelay, chatId, 'choose_sticker');
         await this.callApi('sendDice', { chat_id: chatId, emoji: '🎰' });
 
-        await this.spreadsheet.getNamedValues("title", this.user_lang)
-            .then(async values => {
-                const [raw_title, index] = this.getRandomInArray(values, 0);
-                const title = (raw_title.trim().charAt(0).toUpperCase() + raw_title.substring(1)).replaceAll("\n", " ").trim();
+        const values = await this.spreadsheet.getNamedValues("title", this.user_lang);
 
-                const searchWord = getReply("searching_word", this.user_lang);
+        const [raw_title, index] = this.getRandomInArray(values, 0);
+        const title = (raw_title.trim().charAt(0).toUpperCase() + raw_title.substring(1)).replaceAll("\n", " ").trim();
 
-                const text = `${searchWord}${title}`;
-                await this.sendMessage(chatId, text);
+        const searchWord = getReply("searching_word", this.user_lang);
 
-                await this.composeAndSendEntry(chatId, index, true, 1500);
-            });
+        const text = `${searchWord}${title}`;
+        await this.sendMessage(chatId, text);
+
+        await this.composeAndSendEntry(chatId, index, true, 1500);
     }
 
     getEntryContent(values) {
@@ -439,10 +437,8 @@ export class Bot {
     }
 
     async composeAndSendEntry(chatId, entry_index, delete_last, delete_delay = 0) {
-        await this.spreadsheet.getEntry(entry_index)
-            .then(async values => {
-                await this.sendEntry(chatId, values, delete_last, delete_delay);
-            });
+        const values = await this.spreadsheet.getEntry(entry_index);
+        await this.sendEntry(chatId, values, delete_last, delete_delay);
     }
 
     async searchAndSendEntry(chatId, text_query, delete_last, delete_delay = 0) {
@@ -473,12 +469,11 @@ export class Bot {
             let titles = "";
             for (let i = 0; i < ids.length; i++) {
                 const id = ids[i];
+                const values = await this.spreadsheet.getEntry(id);
+                const [title, date, ..._] = this.getEntryContent(values);
 
-                await this.spreadsheet.getEntry(id).then(values => {
-                    const [title, date, ..._] = this.getEntryContent(values);
-                    titles += `📌 *${i + 1}.* ${title}. _${date}_.\n\n`;
-                    buttons[i] = { text: i + 1, callback_data: `search_nosearchimitate_${id}` };
-                });
+                titles += `📌 *${i + 1}.* ${title}. _${date}_.\n\n`;
+                buttons[i] = { text: i + 1, callback_data: `search_nosearchimitate_${id}` };
             }
 
             buttons[ids.length] = { text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}` };
