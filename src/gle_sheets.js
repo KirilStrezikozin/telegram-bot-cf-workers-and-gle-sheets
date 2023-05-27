@@ -140,12 +140,12 @@ export class Spreadsheet {
                     }
 
                     // entry receives bonus for fully matching title
-                    if (description.includes(query) || date.includes(query) || query.includes(date)) {
+                    if (title.includes(query) || query.includes(title) || description.includes(query) || date.includes(query) || query.includes(date)) {
                         local_matches += keywords.length;
                     }
 
                     // entry is the only match if it fully matches or found in the title
-                    if (title.includes(query) || query.includes(title) || title === query) {
+                    if (title === query) {
                         global_matches = new Array(this.n_of_entries);
                         global_matches[id] = 1;
                         break;
