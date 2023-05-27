@@ -302,7 +302,8 @@ export class Bot {
         const welcome_msg = getReply("welcome", this.user_lang, message.from.first_name);
 
         await this.sendMessage(message.chat.id, welcome_msg, [
-            { text: getReply("invoke_about_us", this.user_lang), callback_data: 'invoke_about_us' }]);
+            [{ text: getReply("invoke_about_us", this.user_lang), callback_data: 'invoke_about_us' }]
+        ]);
     }
 
     async sendHelp(message) {
@@ -315,7 +316,7 @@ export class Bot {
         const searchWord = getReply("search_word", this.user_lang);
         const text = `${searchWord}: ${title}`;
         await this.sendMessage(message.chat.id, help_msg, [
-            { text: text, callback_data: data}
+            [{ text: text, callback_data: data}]
         ]);
     }
 
@@ -323,8 +324,9 @@ export class Bot {
         const lang_msg = getReply("language", this.user_lang);
 
         await this.sendMessage(message.chat.id, lang_msg, [
-            { text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
-            { text: "🇺🇸 English", callback_data: 'set_lang_en' }]);
+            [{ text: "🇺🇦 Українська", callback_data: 'set_lang_ua' },
+             { text: "🇺🇸 English", callback_data: 'set_lang_en' }]
+        ]);
     }
 
     async sendStop(message) {
@@ -368,7 +370,7 @@ export class Bot {
         if (buttons) {
             await this.callApi('sendMessage', { chat_id: chatId, text: text,
                 parse_mode: 'Markdown', disable_notification: disable_notification,
-                reply_markup: JSON.stringify({ inline_keyboard: [buttons] }) });
+                reply_markup: JSON.stringify({ inline_keyboard: buttons }) });
 
         } else if (keyboard) {
             await this.callApi('sendMessage', { chat_id: chatId, text: text,
@@ -465,18 +467,18 @@ export class Bot {
             const search_choose_exact_text = getReply("search_choose_exact", this.user_lang);
             const description_emoji = this.getRandomReply("entry_description_emoji");
 
-            let buttons = new Array(ids.length + 1);
+            let buttons = new Array(new Array(ids.length), [null]);
             let titles = "";
             for (let i = 0; i < ids.length; i++) {
                 const id = ids[i];
                 const values = await this.spreadsheet.getEntry(id);
                 const [title, date, ..._] = this.getEntryContent(values);
 
-                titles += `📌 *${i + 1}.* ${title}.\n📅 _${date}_.\n\n`;
-                buttons[i] = { text: i + 1, callback_data: `search_nosearchimitate_${id}` };
+                titles += `👇 *${i + 1}.* ${title}.\n - _${date}_.\n\n`;
+                buttons[0][i] = { text: `${i + 1}`, callback_data: `search_nosearchimitate_${id}` };
             }
 
-            buttons[ids.length] = { text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}` };
+            buttons[1][0] = { text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}` };
 
             if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, 0);
 
