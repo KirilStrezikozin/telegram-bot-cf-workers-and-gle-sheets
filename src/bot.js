@@ -375,19 +375,25 @@ export class Bot {
     async sendMessage(chatId, text, buttons = null, keyboard = null, disable_notification = false) {
         await this.sendDelay(this.sendMessageDelay, chatId);
 
-        if (buttons) {
-            await this.callApi('sendMessage', { chat_id: chatId, text: text,
-                parse_mode: 'Markdown', disable_notification: disable_notification,
-                reply_markup: JSON.stringify({ inline_keyboard: buttons }) });
+        try {
+            if (buttons) {
+                await this.callApi('sendMessage', { chat_id: chatId, text: text,
+                    parse_mode: 'Markdown', disable_notification: disable_notification,
+                    reply_markup: JSON.stringify({ inline_keyboard: buttons }) });
 
-        } else if (keyboard) {
-            await this.callApi('sendMessage', { chat_id: chatId, text: text,
-                parse_mode: 'Markdown', disable_notification: disable_notification,
-                reply_markup: JSON.stringify( {keyboard: keyboard, one_time_keyboard: true }) });
+            } else if (keyboard) {
+                await this.callApi('sendMessage', { chat_id: chatId, text: text,
+                    parse_mode: 'Markdown', disable_notification: disable_notification,
+                    reply_markup: JSON.stringify( {keyboard: keyboard, one_time_keyboard: true }) });
 
-        } else {
-            await this.callApi('sendMessage', { chat_id: chatId, text: text,
-                parse_mode: 'Markdown', disable_notification: disable_notification });
+            } else {
+                await this.callApi('sendMessage', { chat_id: chatId, text: text,
+                    parse_mode: 'Markdown', disable_notification: disable_notification });
+            }
+
+        } catch (error) {
+            console.log(error);
+                await this.callApi('sendMessage', { chat_id: chatId, text: "```\nError encountered in async sendMessage(...):\n\n" + error + "\n```\n*Please, notify @heiskempler*\n", parse_mode: 'Markdown' });
         }
     }
 
