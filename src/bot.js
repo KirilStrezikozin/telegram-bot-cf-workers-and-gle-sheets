@@ -166,34 +166,7 @@ export class Bot {
 
             try {
                 const entry_index = parseInt(data.replace("search_", ""));
-
-                await this.spreadsheet.getEntry(entry_index)
-                    .then(async values => {
-                        const entry = values[0];
-                        console.log(entry);
-
-                        const title = (entry[2].trim().charAt(0).toUpperCase() + entry[2].substring(1)).replaceAll("\n", " ").trim();
-                        const date = entry[3].toLowerCase().replaceAll("\n", " ").trim();
-                        const description = (entry[4].charAt(0).toUpperCase() + entry[4].substring(1)).replaceAll("\n", " ").trim();
-
-                        const description_emoji = this.getRandomReply("entry_description_emoji");
-
-                        console.log(title);
-                        console.log(date);
-                        console.log(description);
-
-                        // wait and delete searching word
-                        await this.deleteMessage(message.chat.id, this.lastSentMessageId, 800);
-
-                        const entry_msg = `📌 *${title}*\n\n📅 _${date}_\n\n${description_emoji} ${description}`;
-
-                        const oldDelay = this.sendMessageDelay;
-                        this.sendMessageDelay = 0; // fixed delay
-
-                        await this.sendMessage(message.chat.id, entry_msg);
-
-                        this.sendMessageDelay = oldDelay;
-                    });
+                await this.composeAndSendEntry(message.chat.id, entry_index);
             }
 
             catch (error) {
@@ -404,6 +377,43 @@ export class Bot {
                 const text = `${searchWord}${title}`;
                 await this.sendMessage(chatId, text);
             });
+    }
+
+    async sendEntry(chatId, values) {
+        const entry = values[0];
+        console.log(entry);
+
+        const title = (entry[2].trim().charAt(0).toUpperCase() + entry[2].substring(1)).replaceAll("\n", " ").trim();
+        const date = entry[3].toLowerCase().replaceAll("\n", " ").trim();
+        const description = (entry[4].charAt(0).toUpperCase() + entry[4].substring(1)).replaceAll("\n", " ").trim();
+
+        const description_emoji = this.getRandomReply("entry_description_emoji");
+
+        console.log(title);
+        console.log(date);
+        console.log(description);
+
+        const entry_msg = `📌 *${title}*\n\n📅 _${date}_\n\n${description_emoji} ${description}`;
+        // console.log(entry_msg);
+
+        // wait and delete searching word
+        await this.deleteMessage(chatId, this.lastSentMessageId, 800);
+
+        const oldDelay = this.sendMessageDelay;
+        this.sendMessageDelay = 0; // fixed delay
+
+        await this.sendMessage(chatId, entry_msg);
+
+        this.sendMessageDelay = oldDelay;
+    }
+
+    async composeAndSendEntry(chatId, entry_index = null) {
+        if (entry_index !== null) {
+            await this.spreadsheet.getEntry(entry_index)
+                .then(async values => {
+                    await this.sendEntry(chatId, values);
+                });
+        }
     }
 
     async answerCallbackQuery(callbackQueryId, text) {
