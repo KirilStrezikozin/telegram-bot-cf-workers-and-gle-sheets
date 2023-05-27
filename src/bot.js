@@ -369,7 +369,8 @@ export class Bot {
 
         await this.spreadsheet.getNamedValues("title", this.user_lang)
             .then(async values => {
-                const [title, index] = this.getRandomInArray(values, 0);
+                const [raw_title, index] = this.getRandomInArray(values, 0);
+                const title = (raw_title.trim().charAt(0).toUpperCase() + raw_title.substring(1)).replaceAll("\n", " ").trim();
 
                 const searchWord = getReply("searching_word", this.user_lang);
 
