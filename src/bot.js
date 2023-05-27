@@ -457,8 +457,8 @@ export class Bot {
 
                         await this.spreadsheet.getEntry(id).then(values => {
                             const [title, ..._] = this.getEntryContent(values);
-                            titles += `📌 *${i}.* ${title}\n\n`;
-                            buttons[i] = { text: i, callback_data: `searches_${id}` };
+                            titles += `📌 *${i + 1}.* ${title}\n\n`;
+                            buttons[i] = { text: i + 1, callback_data: `searches_${id}` };
                         });
                     }
 
