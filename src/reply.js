@@ -116,6 +116,11 @@ export function getReply(msgType, lang, first_name = "") {
             ["en", "🇺🇸"],
         ])],
 
+        ["all_word", new Map([
+            ["ua", "Усі"],
+            ["en", "All"],
+        ])],
+
         ["search_word", new Map([
             ["ua", "Шукати"],
             ["en", "Search"],
@@ -124,6 +129,15 @@ export function getReply(msgType, lang, first_name = "") {
         ["searching_word", new Map([
             ["ua", "🔎 Шукаю...\n"],
             ["en", "🔎 Searching for...\n"],
+        ])],
+
+        ["search_choose_exact", new Map([
+            ["ua",
+                "Мені вдалося знайти декілька результатів, що відповідають твоєму запиту. Поглянь на назви нижче і *обери номер*, який бажаєш повністю побачити, або _Усі_:\n\n"
+            ],
+            ["en",
+                "I found several results matching your query. Have a look at their titles below and choose number of the one you'd like to see the full information about, or press _All_:\n\n"
+            ],
         ])],
 
         ["entry_description_emoji", new Map([
@@ -342,6 +356,60 @@ export function getReply(msgType, lang, first_name = "") {
                 "Actively searching...\n",
                 "Analyzing your query...\n",
                 "And... It's here...\n")
+            ],
+        ])],
+
+        ["search_not_found", new Map([
+            ["ua", new Array(
+                "😕 На жаль, нічого не знайдено\n",
+                "😕 На жаль, цього не має в моїй базі данних\n",
+                "😕 На жаль, пошук не дав результатів\n",
+                "😕 Пробач, нічого не вдалося знайти\n",
+                "😕 Пробач, по цьому нічого не знайшлося\n",
+                "😕 Немає результатів\n",
+                "😕 Пошук не виявився вдалим\n",
+                "😕 На жаль, не знайшов нічого\n",
+                "😕 Не знайшов нічого, спробуй сформулювати по-іншому\n",
+                "😕 Такого не знайшов\n",
+                "😕 Упс, такого не знайшлося в моїй базі\n",
+                "😕 На жаль, про це нічого немає\n",
+                "😕 Спробуй сформулювати по-іншому\n",
+                "😕 Мабуть, такої інформації в мене немає\n",
+                "😕 Не вдалося знайти відповідь на це запитання\n",
+                "😕 На жаль, нічого подібного не виявлено\n",
+                "😕 Не знайдено інформації, що відповідає вашому запиту\n",
+                "😕 За вашим запитом немає результатів\n",
+                "😕 Ця історична подія вийшла за межі моїх знань\n",
+                "😕 На жаль, не вдається знайти відповідь на це запитання\n",
+                "😕 Вибачте, але я не можу знайти інформацію щодо цього запиту\n",
+                "😕 Здається, я не маю відповіді на це запитання\n",
+                "😕 Пробачте, але я не знайшов відповіді на це запитання\n",
+                "😕 Цього не знайдено в моїй базі даних\n",
+                "😕 Нажаль, я не маю інформації щодо цього запиту\n",
+                "😕 Вибачте, але не вдалося знайти відповідь на це запитання\n",
+                "😕 Мабуть, ця історична подія не зберігається у моїх джерелах\n")
+            ],
+            ["en", new Array(
+                "😕 I'm sorry, but I couldn't find any matching results\n",
+                "😕 Unfortunately, there are no records that match your search\n",
+                "😕 Oops, it seems I couldn't find what you were looking for\n",
+                "😕 I'm sorry, but there's no information available for your query\n",
+                "😕 Regrettably, I didn't find any relevant data\n",
+                "😕 Sorry, but I couldn't locate any matching entries\n",
+                "😕 Apologies, but I couldn't retrieve any results\n",
+                "😕 Unfortunately, your search didn't yield any results\n",
+                "😕 I'm afraid I couldn't find any relevant information\n",
+                "😕 Sorry, but I came up empty-handed on this one\n",
+                "😕 No results were found for your specific inquiry\n",
+                "😕 I couldn't find any data related to your search criteria\n",
+                "😕 Regrettably, there's no information available for this request\n",
+                "😕 I didn't uncover any matches based on your query\n",
+                "😕 I apologize, but it seems there's nothing to display\n",
+                "😕 Sorry, but I didn't locate any relevant records\n",
+                "😕 Unfortunately, I couldn't find any related entries\n",
+                "😕 I'm afraid there are no results that match your search\n",
+                "😕 Apologies, but I couldn't find any data points for this query\n",
+                "😕 It appears that there is no information available for this search term\n")
             ],
         ])],
 
