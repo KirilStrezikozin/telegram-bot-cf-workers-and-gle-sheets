@@ -169,14 +169,15 @@ export class Bot {
             await this.deleteMessage(message.chat.id, message.message_id);
 
             for (let text_id of entry_data) {
-                const id = parseInt(text_id) || null;
-                if (id === null) continue;
+                const id = parseInt(text_id);
+                console.log(id);
+                if (isNaN(id)) continue;
 
                 await this.composeAndSendEntry(message.chat.id, id, false);
             }
 
         } else if (data.includes('search_')) {
-            let sendDelay = 0;
+            let useDelay = false;
 
             if (!data.includes('_nosearchimitate_')) {
                 // searching word to imitate search progress
@@ -184,20 +185,20 @@ export class Bot {
                 await this.sendMessage(message.chat.id, "🔎");
                 await this.sendMessage(message.chat.id, searching_word);
 
-                sendDelay = 800;
+                useDelay = true;
             }
 
             try {
                 let entry_data = data.replace("search_", "").replace("nosearchimitate_", "").split("_");
                 const entry_index = parseInt(entry_data[0]);
 
-                const delMsgIndex = parseInt(entry_data[1]);
+                // const delMsgIndex = parseInt(entry_data[1]);
 
-                if (delMsgIndex || null !== null) {
-                    await this.deleteMessage(message.chat.id, delMsgIndex, 0);
-                }
+                // if (delMsgIndex || null !== null) {
+                //     await this.deleteMessage(message.chat.id, delMsgIndex, 0);
+                // }
 
-                await this.composeAndSendEntry(message.chat.id, entry_index, true, sendDelay);
+                await this.composeAndSendEntry(message.chat.id, entry_index, useDelay, 800);
             }
 
             catch (error) {
@@ -507,15 +508,13 @@ export class Bot {
             this.sendMessageDelay = oldDelay;
 
         } else {
-            // todo: text
-            const search_choose_exact_text = getReply("search_choose_exact", this.user_lang);
+            const search_choose_many_text = getReply("search_choose_many", this.user_lang);
             const description_emoji = this.getRandomReply("entry_description_emoji");
-            //
-            // todo: buttons
+
             const buttons = [
                 [
-                    { text: getReply("search_top1", this.user_lang), callback_data: `search_multiple_${[]}`},
-                    { text: getReply("search_top3", this.user_lang), callback_data: `search_multiple_${[]}`},
+                    { text: getReply("search_top1", this.user_lang), callback_data: `search_multiple_${[...[ids[0]]]}`},
+                    { text: getReply("search_top3", this.user_lang), callback_data: `search_multiple_${[...[ids[0], ids[1], ids[2]]]}`},
                 ],
                 [{ text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}`}]
             ];
@@ -525,9 +524,8 @@ export class Bot {
             const oldDelay = this.sendMessageDelay;
             this.sendMessageDelay = 0;
 
-            // todo: msg
-            const search_choose_exact_msg = `${description_emoji} ${search_choose_exact_text}${titles}`;
-            await this.sendMessage(chatId, search_choose_exact_msg, buttons);
+            const search_choose_many_msg = `${description_emoji} ${search_choose_many_text}`;
+            await this.sendMessage(chatId, search_choose_many_msg, buttons);
 
             this.sendMessageDelay = oldDelay;
         }

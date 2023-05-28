@@ -140,6 +140,25 @@ export function getReply(msgType, lang, first_name = "") {
             ],
         ])],
 
+        ["search_choose_many", new Map([
+            ["ua",
+                "За твоїм запитом було знайдено чимало результатів. Ти можеш спробувати сформулювати питання точніше або *обирай ту кількість результатів нижче, які бажаєш побачити*.\n"
+            ],
+            ["en",
+                "I found many results matching your query. You can trying making it more precise or *choose the number of results you want to see below*.\n"
+            ],
+        ])],
+
+        ["search_top1", new Map([
+            ["ua", "Топ 1"],
+            ["en", "Top 1"],
+        ])],
+
+        ["search_top3", new Map([
+            ["ua", "Топ 3"],
+            ["en", "Top 3"],
+        ])],
+
         ["entry_description_emoji", new Map([
             ["ua", new Array("📗", "📕", "📙", "📃", "📘", "📒", "📓", "📜")],
             ["en", new Array("📗", "📕", "📙", "📃", "📘", "📒", "📓", "📜")],
