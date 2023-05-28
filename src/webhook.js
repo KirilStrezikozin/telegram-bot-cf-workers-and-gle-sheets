@@ -9,7 +9,7 @@ export class Webhook {
     constructor(worker_url, bot_api_token, bot_api_secret) {
         this.bot_api_token = bot_api_token;
         this.bot_api_secret = bot_api_secret;
-        this.worker_url = worker_url; // Worker URL
+        this.worker_url = worker_url;
         this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
     }
 

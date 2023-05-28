@@ -20,8 +20,8 @@ export class Bot {
 
         this.user_lang = "ua";
         this.sendMessageDelay = 400;
-        this.helpEventLength = 25;
-        this.helpEventSearchTrials = 20;
+        this.helpEntryLength = 25;
+        this.helpEntrySearchTrials = 20;
 
         this.is_alive = true;
         this.lastSentMessageId = null;
@@ -76,9 +76,9 @@ export class Bot {
 
             } else if (message.text.includes('/random')) {
                 // unsupported in browser version
-                 await this.sendDice(message.chat.id);
+                await this.sendDice(message.chat.id);
 
-                // can use this indtead, but no animation
+                // can use this instead, but no animation
                 // await this.sendMessage(message.chat.id, '🎰');
 
             } else if (message.text.includes('/about')) {
@@ -231,10 +231,11 @@ export class Bot {
     }
 
     /*
-     * Get random element in array the length of which is less than this.helpEventLength.
+     * Get random element in array the length of which is less than this.helpEntryLength.
+        * Search for not more than this.helpEntrySearchTrials.
      * If subindex is not -1, value = arr[index][subindex]
      */
-    getRandomHelpEvent(arr, sub = -1) {
+    getRandomHelpEntry(arr, sub = -1) {
         let value = "";
         let index = -1;
         let trial = 0;
@@ -251,9 +252,9 @@ export class Bot {
                 value = "400 Bad Request: value is empty";
             }
 
-            if (trial >= this.helpEventSearchTrials) {
+            if (trial >= this.helpEntrySearchTrials) {
                 break;
-            } else if (value.length > 20) {
+            } else if (value.length > this.helpEntryLength) {
                 cache[index] = true;
                 index = -1;
                 // console.log(`${trial} trial went with ${value}`);
@@ -272,7 +273,6 @@ export class Bot {
 
     async replyRandom(chatId, replyType) {
         const reply = this.getRandomReply(replyType);
-
         await this.sendMessage(chatId, reply);
     }
 
@@ -319,7 +319,7 @@ export class Bot {
         const help_msg = getReply("help", this.user_lang, message.from.first_name);
         const values = await this.spreadsheet.getNamedValues("title", this.user_lang);
 
-        const [title, index] = this.getRandomHelpEvent(values, 0);
+        const [title, index] = this.getRandomHelpEntry(values, 0);
 
         const data = `search\_${index}`;
         const searchWord = getReply("search_word", this.user_lang);
@@ -422,7 +422,6 @@ export class Bot {
 
     getEntryContent(values) {
         const entry = values[0];
-        console.log(entry);
 
         const title = (entry[2].trim().charAt(0).toUpperCase() + entry[2].substring(1)).replaceAll("\n", " ").trim().replace(/\s+/g, " ");
         const date = entry[3].toLowerCase().replaceAll("\n", " ").trim().replace(/\s+/g, " ");
@@ -434,10 +433,6 @@ export class Bot {
     async sendEntry(chatId, values, delete_last, delete_delay) {
         const [title, date, description] = this.getEntryContent(values);
         const description_emoji = this.getRandomReply("entry_description_emoji");
-
-        console.log(title);
-        console.log(date);
-        console.log(description);
 
         const entry_msg = `📌 *${title}*\n\n📅 _${date}_\n\n${description_emoji} ${description}`;
         // console.log(entry_msg);
@@ -465,7 +460,7 @@ export class Bot {
         }
 
         const ids = await this.spreadsheet.searchEntries(text_query, this.user_lang);
-        console.log("Received ids:", ids);
+        // console.log("Received ids:", ids);
 
         if (!ids.length) {
             if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, delete_delay);
@@ -509,6 +504,8 @@ export class Bot {
 
         } else {
             let ids_cropped = ids;
+
+            // telegram allows callback_data of 64 bytes length max, which is approximately 16 found entries ids at max
             ids_cropped.splice(16, ids.length - 16 + 1);
 
             const description_emoji = this.getRandomReply("entry_description_emoji");
