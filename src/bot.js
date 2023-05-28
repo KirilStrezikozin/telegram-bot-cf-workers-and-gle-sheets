@@ -394,7 +394,7 @@ export class Bot {
 
         } catch (error) {
             console.log(error);
-                await this.callApi('sendMessage', { chat_id: chatId, text: "```\nError encountered in async sendMessage(...):\n\n" + error + "\n```\n*Please, notify @heiskempler*\n", parse_mode: 'Markdown' });
+            await this.callApi('sendMessage', { chat_id: chatId, text: "```\nError encountered in async sendMessage(...):\n\n" + error + "\n```\n*Please, notify @heiskempler*\n", parse_mode: 'Markdown' });
         }
     }
 
@@ -508,18 +508,31 @@ export class Bot {
             this.sendMessageDelay = oldDelay;
 
         } else {
-            const search_choose_many_text = getReply("search_choose_many", this.user_lang);
+            let ids_cropped = ids;
+            ids_cropped.splice(16, ids.length - 16 + 1);
+
             const description_emoji = this.getRandomReply("entry_description_emoji");
+
+            // display top 1 matching entry
+            const values0 = await this.spreadsheet.getEntry(ids[0]);
+            const [title0, date0, ..._] = this.getEntryContent(values0);
+
+            let date_end_dot = ".";
+            if (date0[date0.length - 1] === ".") date_end_dot = "";
+            const title = `👇 *${getReply("search_top1", this.user_lang)}.* ${title0}.\n - _${date0}_${date_end_dot}`;
+
+            const search_choose_many_text = getReply("search_choose_many", this.user_lang, title, ids_cropped.length);
 
             const buttons = [
                 [
                     { text: getReply("search_top1", this.user_lang), callback_data: `search_multiple_${[...[ids[0]]]}`},
-                    { text: getReply("search_top3", this.user_lang), callback_data: `search_multiple_${[...[ids[0], ids[1], ids[2]]]}`},
+                    { text: getReply("search_top3", this.user_lang), callback_data: `search_multiple_${[...[ids[0], ids[1], ids[2]]]}`}
                 ],
-                [{ text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids]}`}]
+                [{ text: getReply("all_word", this.user_lang), callback_data: `search_multiple_${[...ids_cropped]}`}]
             ];
 
             if (delete_last) await this.deleteMessage(chatId, this.lastSentMessageId, 0);
+            console.log(buttons);
 
             const oldDelay = this.sendMessageDelay;
             this.sendMessageDelay = 0;

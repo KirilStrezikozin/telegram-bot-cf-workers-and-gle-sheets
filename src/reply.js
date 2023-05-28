@@ -6,7 +6,7 @@
 /**
  * Get bot reply message text
  */
-export function getReply(msgType, lang, first_name = "") {
+export function getReply(msgType, lang, first_name = "", count = "") {
     const botReplies = new Map([
         ["welcome", new Map([
             ["ua", 
@@ -142,10 +142,12 @@ export function getReply(msgType, lang, first_name = "") {
 
         ["search_choose_many", new Map([
             ["ua",
-                "За твоїм запитом було знайдено чимало результатів. Ти можеш спробувати сформулювати питання точніше або *обирай ту кількість результатів нижче, які бажаєш побачити*.\n"
+                `За твоїм запитом було знайдено результатів: ${count}. Ось Топ 1 - найкраще співпадіння:\n\n${first_name}\n\n` +
+                "Ти можеш спробувати сформулювати питання точніше або *обирай ту кількість результатів нижче, яку бажаєш побачити*.\n"
             ],
             ["en",
-                "I found many results matching your query. You can trying making it more precise or *choose the number of results you want to see below*.\n"
+                `I found ${count} result(s) matching your query. Here is the Top 1 best matching:\n\n${first_name}\n\n` +
+                "You can trying making it more precise or *choose the number of results you want to see below*.\n"
             ],
         ])],
 
