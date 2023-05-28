@@ -186,7 +186,7 @@ export class Spreadsheet {
                 // skip break if <= 3 entries left and skipFilter is kinda 'exhausted'
                 if (global_matches.filter(matches => matches > 0 ).length <= 3 && !skipFilter) break;
 
-                global_matches[m_index]--;
+                // global_matches[m_index]--;
                 if (global_matches[m_index] < 0) global_matches[m_index] = 0;
             }
         }
