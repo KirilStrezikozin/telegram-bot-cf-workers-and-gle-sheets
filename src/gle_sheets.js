@@ -101,23 +101,32 @@ export class Spreadsheet {
     async searchEntries(text_query, user_lang) {
         // escape general punctuation, ignore dashes and quotes. Lowercase. Split by spaces into array of words
         // query = text_query.replace(/[!#$%&()*,./:;<=>?@[\]^_{|}~+]/g, "").toLowerCase().split(/\s+/);
-        const p_regex = /[!#$%&()*,./:;<=>?@[\]^_{|}~+]/g;
+        const p_regex = /[.,\/#!$%\^&\*;:{}=\-_'‘`~()(-)\[\]{}«»༺-༽᚛-᚜‘-‟‹-›⁅-⁆⁽-⁾₍-₎〈-〉❨-❵⟅-⟆⟦-⟯⦃-⦘⧘-⧛⧼-⧽⸂-⸅⸉-⸊⸌-⸍⸜-⸝⸠-⸩〈-】〔-〛〝-〟﴾-﴿︗-︘︵-﹄﹇-﹈﹙-﹞（-）［］｛｝｟-｠｢-｣]+/g;
+        const p_simple_regex = /[(-)\[\]{}«»༺-༽᚛-᚜'‘‘-‟‹-›⁅-⁆⁽-⁾₍-₎〈-〉❨-❵⟅-⟆⟦-⟯⦃-⦘⧘-⧛⧼-⧽⸂-⸅⸉-⸊⸌-⸍⸜-⸝⸠-⸩〈-】〔-〛〝-〟﴾-﴿︗-︘︵-﹄﹇-﹈﹙-﹞（-）［］｛｝｟-｠｢-｣]+/g;
 
-        const query = text_query.replace(p_regex, " ").toLowerCase();
+        // const query = text_query.replace(p_regex, " ").toLowerCase();
+        const query = text_query.replace(p_simple_regex, "").toLowerCase();
         // text_query = text_query.toLowerCase();
         console.log("Query: " + query);
 
+        if (query === "") return [];
+
         // preallocate matches
         let global_matches = new Array(this.n_of_entries);
+
+        // do this number of iterations to remove min values from search if there're the ones with bonuses
+        let minFloor = 0;
+        // in how many iterations of minFloor ignore the number of entries <= 3
+        let skipTrimFloor = 0;
 
         await this.getNamedValues('full', user_lang)
             .then(async values => {
                 for (let id = 0; id < values.length; id++) {
                     const text_keywords = values[id][1];
 
-                    let title = values[id][2].replace(p_regex, " ").replace(/\s+/g, " ").trim().toLowerCase();
-                    let date = values[id][3].replace(p_regex, " ").replace(/\s+/g, " ").trim().toLowerCase();
-                    let description = values[id][4].replace(p_regex, " ").replace(/\s+/g, " ").trim().toLowerCase();
+                    let title = values[id][2].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
+                    let date = values[id][3].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
+                    let description = values[id][4].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
 
                     if (title === "") title = "?";
                     if (date === "") date = "?";
@@ -125,12 +134,12 @@ export class Spreadsheet {
 
                     // console.log("Values", values);
                     // trim text_keywords, lowercase, replace spaces+commas with commas, split into array of words
-                    const keywords = text_keywords.trim().toLowerCase().replace(/[,\s]+/g, ",").split(",")
+                    const keywords = text_keywords.trim().toLowerCase().replace(/,\s+/g, ",").replace(/\s+/g, " ").split(",")
                         .filter(keyword => {
                             // filter out with no useful content
                             return (keyword.replace(p_regex, "").length > 0 && keyword !== "україн" && keyword !== "ukraine");
                         });
-                    // console.log("Keywords:", keywords);
+                    if (id === 38 || id === 6 || id === 49) { console.log("Keywords:", keywords); console.log(description); }
 
                     // loop overs keywords, check if at least one keyword is present in query
                     // const isMatch = keywords.some(keyword => query.includes(keyword));
@@ -140,14 +149,22 @@ export class Spreadsheet {
                     }
 
                     // entry receives bonus for fully matching title
-                    if (title.includes(query) || query.includes(title) || description.includes(query) || date.includes(query) || query.includes(date)) {
+                    if (title.includes(query) || query.includes(title) || date.includes(query) || query.includes(date)) {
                         local_matches += keywords.length;
+                        minFloor++;
                     }
+
+                    if (date.includes(query) || query.includes(date)) {
+                        skipTrimFloor++;
+                    }
+
+                    if (description.includes(query)) local_matches++;
 
                     // entry is the only match if it fully matches or found in the title
                     if (title === query) {
                         global_matches = new Array(this.n_of_entries);
                         global_matches[id] = 1;
+                        minFloor = 0;
                         break;
                     }
 
@@ -156,10 +173,31 @@ export class Spreadsheet {
             });
 
         console.log(global_matches);
+
+        for (let _ = 0; _ < minFloor; _++) {
+            // const min = Math.min.apply(Math, global_matches.filter(matches => matches > 0));
+            // console.log("min", min);
+            let skipFilter = false;
+            if (skipTrimFloor > 0) {
+                skipFilter = true;
+                skipTrimFloor--;
+            }
+
+            for (let m_index = 0; m_index < this.n_of_entries; m_index++) {
+                if (global_matches.filter(matches => matches > 0 ).length <= 3 && !skipFilter) break;
+
+                global_matches[m_index]--;
+                if (global_matches[m_index] < 0) global_matches[m_index] = 0;
+                // if (global_matches[m_index] <= min) global_matches[m_index] = 0;
+            }
+        }
+
+        console.log(global_matches);
+
         // sort by number of local matches and filter out unmatched
         const ids = Array.from(global_matches.keys())
             .sort((matches1, matches2) => global_matches[matches2] - global_matches[matches1])
-            .filter((id) => global_matches[id] > 0 );
+            .filter(id => global_matches[id] > 0 );
 
         return ids;
     }
