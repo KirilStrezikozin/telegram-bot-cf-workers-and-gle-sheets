@@ -83,7 +83,7 @@ export class Bot {
 
             } else if (message.text.includes('/about')) {
                 await this.sendMessage(message.chat.id, getReply("about_us", this.user_lang),
-                    [getReply("about_us_keyboard", this.user_lang)]);
+                    getReply("about_us_keyboard", this.user_lang));
 
             } else if (message.text.includes('/lifehack')) {
                 await this.sendLifehack(message);

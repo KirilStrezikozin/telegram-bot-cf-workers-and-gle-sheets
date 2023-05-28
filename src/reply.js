@@ -58,8 +58,8 @@ export function getReply(msgType, lang, first_name = "", count = "") {
 
         ["about_us_keyboard", new Map([
             ["ua", new Array(
-                { text: "🎓 Школа Educator", url: 'https://educator.weblium.site' },
-                { text: "👨‍💻 Код проєкту на GitHub", url: 'https://github.com/KirilStrezikozin/telegram-bot-cf-workers-and-gle-sheets' })
+                [{ text: "🎓 Школа Educator", url: 'https://educator.weblium.site' }],
+                [{ text: "👨‍💻 Код проєкту на GitHub", url: 'https://github.com/KirilStrezikozin/telegram-bot-cf-workers-and-gle-sheets' }])
             ],
             ["en", new Array(
                 { text: "🎓 Educator School", url: 'https://educator.weblium.site' },
