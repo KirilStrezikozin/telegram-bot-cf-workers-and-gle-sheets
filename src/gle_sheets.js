@@ -11,6 +11,8 @@ export class Spreadsheet {
         this.sheet_id = SHEET_ID;
         this.api_url = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheet_id}`
         this.api_key = `?key=${this.sheet_api_token}`;
+
+        // user_lang is not implemented.
     }
 
     /*
@@ -100,15 +102,12 @@ export class Spreadsheet {
      */
     async searchEntries(text_query, user_lang) {
         // escape general punctuation, ignore dashes and quotes. Lowercase. Split by spaces into array of words
-        // query = text_query.replace(/[!#$%&()*,./:;<=>?@[\]^_{|}~+]/g, "").toLowerCase().split(/\s+/);
+        // quite impressive website to quickly generate these punctuation regexes: <https://apps.timwhitlock.info/js/regex#>
+
         const p_regex = /[.,\/#!$%\^&\*;:{}=\-_'‘`~()(-)\[\]{}«»༺-༽᚛-᚜‘-‟‹-›⁅-⁆⁽-⁾₍-₎〈-〉❨-❵⟅-⟆⟦-⟯⦃-⦘⧘-⧛⧼-⧽⸂-⸅⸉-⸊⸌-⸍⸜-⸝⸠-⸩〈-】〔-〛〝-〟﴾-﴿︗-︘︵-﹄﹇-﹈﹙-﹞（-）［］｛｝｟-｠｢-｣]+/g;
         const p_simple_regex = /[(-)\[\]{}«»༺-༽᚛-᚜'‘‘-‟‹-›⁅-⁆⁽-⁾₍-₎〈-〉❨-❵⟅-⟆⟦-⟯⦃-⦘⧘-⧛⧼-⧽⸂-⸅⸉-⸊⸌-⸍⸜-⸝⸠-⸩〈-】〔-〛〝-〟﴾-﴿︗-︘︵-﹄﹇-﹈﹙-﹞（-）［］｛｝｟-｠｢-｣]+/g;
 
-        // const query = text_query.replace(p_regex, " ").toLowerCase();
         const query = text_query.replace(p_simple_regex, "").toLowerCase();
-        // text_query = text_query.toLowerCase();
-        console.log("Query: " + query);
-
         if (query === "") return [];
 
         // preallocate matches
@@ -116,7 +115,7 @@ export class Spreadsheet {
 
         // do this number of iterations to remove min values from search if there're the ones with bonuses
         let minFloor = 0;
-        // in how many iterations of minFloor ignore the number of entries <= 3
+        // in how many iterations of minFloor to ignore break if the number of entries <= 3
         let skipTrimFloor = 0;
 
         await this.getNamedValues('full', user_lang)
@@ -128,21 +127,22 @@ export class Spreadsheet {
                     let date = values[id][3].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
                     let description = values[id][4].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
 
+                    // empty into "?", "?" is escaped in the query, so it won't match
                     if (title === "") title = "?";
                     if (date === "") date = "?";
                     if (description === "") description = "?";
 
-                    // console.log("Values", values);
-                    // trim text_keywords, lowercase, replace spaces+commas with commas, split into array of words
+                    // trim text_keywords, lowercase, replace spaces + commas with commas, split into array of words
                     const keywords = text_keywords.trim().toLowerCase().replace(/,\s+/g, ",").replace(/\s+/g, " ").split(",")
                         .filter(keyword => {
                             // filter out with no useful content
                             return (keyword.replace(p_regex, "").length > 0 && keyword !== "україн" && keyword !== "ukraine");
                         });
-                    if (id === 38 || id === 6 || id === 49) { console.log("Keywords:", keywords); console.log(description); }
 
-                    // loop overs keywords, check if at least one keyword is present in query
+                    // if just need to know if matching:
                     // const isMatch = keywords.some(keyword => query.includes(keyword));
+
+                    // loop over keywords, check if at least one keyword is present in the query
                     let local_matches = 0;
                     for (const keyword of keywords) {
                         if (query.includes(keyword)) local_matches++;
@@ -154,13 +154,15 @@ export class Spreadsheet {
                         minFloor++;
                     }
 
+                    // because query can include just a year in a date, so we need our minFloor trimming to go for a bit longer
                     if (date.includes(query) || query.includes(date)) {
                         skipTrimFloor++;
                     }
 
+                    // just +1 for a match in description
                     if (description.includes(query)) local_matches++;
 
-                    // entry is the only match if it fully matches or found in the title
+                    // entry is the only match if it fully matches title
                     if (title === query) {
                         global_matches = new Array(this.n_of_entries);
                         global_matches[id] = 1;
@@ -172,11 +174,8 @@ export class Spreadsheet {
                 }
             });
 
-        console.log(global_matches);
-
+        // floor trimming
         for (let _ = 0; _ < minFloor; _++) {
-            // const min = Math.min.apply(Math, global_matches.filter(matches => matches > 0));
-            // console.log("min", min);
             let skipFilter = false;
             if (skipTrimFloor > 0) {
                 skipFilter = true;
@@ -184,17 +183,17 @@ export class Spreadsheet {
             }
 
             for (let m_index = 0; m_index < this.n_of_entries; m_index++) {
+                // skip break if <= 3 entries left and skipFilter is kinda 'exhausted'
                 if (global_matches.filter(matches => matches > 0 ).length <= 3 && !skipFilter) break;
 
                 global_matches[m_index]--;
                 if (global_matches[m_index] < 0) global_matches[m_index] = 0;
-                // if (global_matches[m_index] <= min) global_matches[m_index] = 0;
             }
         }
 
-        console.log(global_matches);
+        // console.log(global_matches);
 
-        // sort by number of local matches and filter out unmatched
+        // return ids by sorting by number of local matches and filtering out matches <= 0
         const ids = Array.from(global_matches.keys())
             .sort((matches1, matches2) => global_matches[matches2] - global_matches[matches1])
             .filter(id => global_matches[id] > 0 );
