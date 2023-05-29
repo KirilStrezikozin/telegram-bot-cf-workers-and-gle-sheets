@@ -23,7 +23,7 @@ export class Spreadsheet {
         await this.getEntriesLength();
 
         const start_row = 2;
-        const end_row = this.n_of_entries + 2;
+        const end_row = this.n_of_entries + 1;
 
         // define known ranges
         this.id_range = `events!A${start_row}:A${end_row}`;
@@ -122,6 +122,7 @@ export class Spreadsheet {
             .then(async values => {
                 for (let id = 0; id < values.length; id++) {
                     const text_keywords = values[id][1];
+                    // console.log(text_keywords);
 
                     let title = values[id][2].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
                     let date = values[id][3].replace(p_simple_regex, "").replace(/\s+/g, " ").trim().toLowerCase();
