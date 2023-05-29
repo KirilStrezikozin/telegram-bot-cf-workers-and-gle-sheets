@@ -31,16 +31,24 @@ export class Bot {
         const content = await request.json();
         await this.spreadsheet.launch();
 
+        let chatId = null;
+
         try {
             // Handle incoming message from the user
             if ('message' in content) {
                 console.log("Replying to: " + content.message.text);
+                chatId = content.message.chat.id;
                 await this.getUserLang(content.message.from.id);
                 await this.handleMessage(content.message);
             }
 
             // Handle inline callback_query from the user
             else if ('callback_query' in content) {
+
+                if (callback_query.hasOwnProperty('message')) {
+                    chatId = content.callback_query.message.chat.id;
+                }
+
                 await this.getUserLang(content.callback_query.from.id);
                 await this.handleCallbackQuery(content.callback_query);
             }
@@ -49,7 +57,16 @@ export class Bot {
         }
         catch (error) {
             console.log(error);
-            return this.error(error, 400);
+            // return this.error(error, 400);
+
+            if (chatId !== null) {
+                await this.callApi('sendMessage', {
+                    chat_id: chatId,
+                    text: "```\nError encountered in async bot.update(...):\n\n" + error + "\n```\n*Please, notify @heiskempler*\n", parse_mode: 'Markdown'
+                });
+            }
+
+            return this.error(error, 200);
         }
 
         return new Response("Ok.", { status: 200 });
