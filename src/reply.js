@@ -62,8 +62,8 @@ export function getReply(msgType, lang, first_name = "", count = "") {
                 [{ text: "👨‍💻 Код проєкту на GitHub", url: 'https://github.com/KirilStrezikozin/telegram-bot-cf-workers-and-gle-sheets' }])
             ],
             ["en", new Array(
-                { text: "🎓 Educator School", url: 'https://educator.weblium.site' },
-                { text: "👨‍💻 Project on GitHub", url: 'https://github.com/KirilStrezikozin/telegram-bot-cf-workers-and-gle-sheets' })
+                [{ text: "🎓 Educator School", url: 'https://educator.weblium.site' }],
+                [{ text: "👨‍💻 Project on GitHub", url: 'https://github.com/KirilStrezikozin/telegram-bot-cf-workers-and-gle-sheets' }])
             ],
         ])],
 
