@@ -15,6 +15,8 @@ export class Bot {
         this.bot_api_secret = bot_api_secret;
         this.api_url = `https://api.telegram.org/bot${bot_api_token}`;
 
+        this.admin_chat_id = ADMIN_CHAT_ID;
+
         this.webhook = new Webhook(worker_url, bot_api_token, bot_api_secret);
         this.spreadsheet = new Spreadsheet();
 
@@ -81,6 +83,7 @@ export class Bot {
             if (message.text.includes('/start')) {
                 await this.sendWelcome(message);
                 await this.sendHelp(message);
+                await this.sendMessage(this.admin_chat_id, `*Hooray! New subscriber:*\n\n${message.from.first_name} - @${message.from.username} - ${message.from.id}`);
 
             } else if (message.text.includes('/stop')) {
                 await this.sendStop(message);
