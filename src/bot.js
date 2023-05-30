@@ -45,7 +45,7 @@ export class Bot {
             // Handle inline callback_query from the user
             else if ('callback_query' in content) {
 
-                if (callback_query.hasOwnProperty('message')) {
+                if (content.callback_query.hasOwnProperty('message')) {
                     chatId = content.callback_query.message.chat.id;
                 }
 
