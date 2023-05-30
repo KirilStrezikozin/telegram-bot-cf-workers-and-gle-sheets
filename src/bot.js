@@ -38,7 +38,7 @@ export class Bot {
         try {
             // Handle incoming message from the user
             if ('message' in content) {
-                console.log("Replying to: " + content.message.text);
+                console.log(`Replying to: ${content.message.text} - @${content.message.from.username} - ${content.message.from.id} - ${content.message.chat.id} - ${content.message.from.first_name}`);
                 chatId = content.message.chat.id;
                 await this.getUserLang(content.message.from.id);
                 await this.handleMessage(content.message);
@@ -55,6 +55,7 @@ export class Bot {
                 await this.handleCallbackQuery(content.callback_query);
             }
 
+            // else console.log("Unhandled request content:\n" + JSON.stringify(content));
             else console.log("Unhandled request content:\n" + content);
         }
         catch (error) {
@@ -591,7 +592,12 @@ export class Bot {
         console.log(result);
 
         // capture last sent message id
-        if (methodName === 'sendMessage') this.lastSentMessageId = result.result.message_id;
+        try {
+            if (methodName === 'sendMessage') this.lastSentMessageId = result.result.message_id;
+        }
+        catch (error) {
+            console.log(error, "403 ingored with 200");
+        }
     }
 
     error(message, status) {
