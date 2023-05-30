@@ -87,6 +87,7 @@ export class Bot {
 
             } else if (message.text.includes('/stop')) {
                 await this.sendStop(message);
+                await this.sendMessage(this.admin_chat_id, `*I've said goodbye to:*\n\n${message.from.first_name} - @${message.from.username} - ${message.from.id}`);
 
             } else if (message.text.includes('/help')) {
                 await this.sendHelp(message);
