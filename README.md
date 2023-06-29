@@ -1,7 +1,7 @@
 # telegram-bot-cf-workers-and-gle-sheets
-> Telegram bot that interacts with [Cloudflare Workers](https://developers.cloudflare.com/workers/) and utilizes [Google Sheets](https://developers.google.com/sheets/api/guides/concepts) for data storage.
+> Telegram bot that interacts with [Cloudflare Workers](https://developers.cloudflare.com/workers/) and utilizes [Google Sheets](https://developers.google.com/sheets/api/guides/concepts) for data storage. No dependencies and no packages are required.
 
-> **Note**: Currently under active development.
+> Just create and deploy a worker, create a bot with BotFather, create GoogleCloud free tier account, and set sheets webhook - that's all there's to it. Adress the guide below.
 
 # Contents
 
@@ -32,7 +32,7 @@ After I decided to move scripts from `my-worker/` into `src/` and config files i
     
 # Deploy
 
-To preview worker locally, run:
+To preview worker locally, run the following:
 
     $ npx wrangler dev --remote
     # open a link in your browser
@@ -51,6 +51,17 @@ To publish local changes to Cloudflare:
 3. Deploy your Worker:
 
         $ npx wrangler deploy
+
+4. Connect a new webhook to the bot with the key you received from BotFather:
+        
+        # in your browser
+        $ <YOUR_WORKER_URL>/setWebhook?bot=<BOT_API_TOKEN>
+
+5. Create [secrets](#variables): `BOT_API_TOKEN` (from BotFather), `BOT_API_SECRET` (info how [here](https://core.telegram.org/bots/api#setwebhook)), `ADMIN_CHAT_ID` (for maintenance messages - you can create it later when you know admin chat id).
+
+7. `SHEET_API_TOKEN` and `SHEET_ID` secrets (great and full guide [here](https://github.com/bpk68/g-sheets-api#set-up-a-google-sheet), this bot doesn't use `g-sheets-api` package though).
+
+8. Redeploy and that's it.
     
 # Variables
 
