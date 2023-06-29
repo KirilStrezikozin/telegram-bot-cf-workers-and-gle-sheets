@@ -10,6 +10,7 @@
 - [Deploy](#deploy)
 - [KVs, Secrets and Vars](#variables)
 - [Webhook](#webhook)
+- What can this bot do? - visit: https://t.me/historic_archivarius_bot
 
 # Get Started with Workers
 
