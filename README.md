@@ -3,6 +3,13 @@
 
 > Just create and deploy a worker, create a bot with BotFather, create GoogleCloud free tier account, and set sheets webhook - that's all there's to it. Adress the guide below.
 
+This bot can:
+1. Retrieve and search data in a google sheet to reply to your search query.
+2. Provide language toggle for users
+3. Send messages on `/welcome`, `/help`, `/stop`, and more
+4. Uses different kinds of telegram inline keyboards
+5. Replies to the user's "hi", "bye", and "thank you" with a set of multiple responses
+
 # Contents
 
 - [Get Started with Workers](#get-started-with-workers)
